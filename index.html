@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipzyCasino | Elite Hub & Blackjack Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --primary-color: #00ffa3;
+    --primary-glow: rgba(0, 255, 163, 0.6);
+    --bg-dark: #070707;
+    --card-bg: rgba(15, 15, 15, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --wheel-red: #ff0055;
+    --red-glow: rgba(255, 0, 85, 0.5);
+    --dlive-yellow: #ffd200;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: #ffffff;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 50%, #0d2017 0%, #070707 100%);
+    z-index: -2;
+}
+
+.chips-background {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.floating-chip {
+    position: absolute;
+    opacity: 0.15;
+    filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));
+    animation: slowFloat 10s ease-in-out infinite alternate;
+}
+
+@keyframes slowFloat {
+    from { transform: translateY(0) rotate(0deg); }
+    to { transform: translateY(-30px) rotate(15deg); }
+}
+
+.main-wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+    display: grid;
+    gap: 25px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.glass-panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative; /* Ajouté pour le positionnement du tooltip */
+}
+
+.glass-panel:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: translateY(-5px);
+}
+
+/* Header & Live Info */
+.header-box {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.profile-pic {
+    width: 100px; height: 100px;
+    border-radius: 25px;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 20px var(--primary-glow);
+    object-fit: cover;
+}
+
+.badge-live {
+    background: rgba(255, 210, 0, 0.1);
+    color: var(--dlive-yellow);
+    border: 1px solid var(--dlive-yellow);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.join-live-btn {
+    background: var(--dlive-yellow);
+    color: #000;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 15px rgba(255, 210, 0, 0.4);
+    transition: 0.3s;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+.join-live-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 210, 0, 0.6);
+}
+
+.tokens-display {
+    background: rgba(0,0,0,0.6);
+    padding: 12px 25px;
+    border-radius: 50px;
+    border: 1px solid var(--primary-color);
+    font-weight: 900;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* Info Tooltip */
+.info-tooltip-wrapper {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.info-tooltip-wrapper i {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.3);
+    transition: 0.3s;
+}
+
+.info-tooltip-wrapper:hover i {
+    color: var(--primary-color);
+}
+
+.tooltip-box {
+    position: absolute;
+    bottom: 30px;
+    right: -10px;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 15px;
+    width: 180px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    text-align: left;
+    pointer-events: none;
+}
+
+.info-tooltip-wrapper:hover .tooltip-box {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.tooltip-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+}
+
+.tooltip-box li {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Modals */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    justify-content: center; align-items: center;
+}
+
+.modal-box {
+    background: #0a0a0a;
+    border: 2px solid var(--primary-color);
+    border-radius: 40px;
+    padding: 40px;
+    text-align: center;
+    max-width: 450px; width: 90%;
+    position: relative;
+}
+
+.wheel-wrapper {
+    position: relative;
+    width: 280px; height: 280px;
+    margin: 20px auto;
+}
+
+.wheel-circle {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 8px solid #1a1a1a;
+    transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+}
+
+.wheel-pointer {
+    position: absolute; top: -20px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 30px solid #fff;
+    z-index: 20;
+}
+
+.btn-action {
+    background: var(--primary-color);
+    color: #000;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-partner {
+    display: block; text-align: center; padding: 12px; border-radius: 12px;
+    border: 1px solid var(--glass-border); color: #fff; text-decoration: none; margin-top: 15px;
+    font-weight: 700; background: rgba(255,255,255,0.03);
+}
+
+/* Cards Blackjack */
+.card {
+    display: inline-block;
+    background: #fff; color: #000;
+    width: 55px; height: 80px;
+    border-radius: 6px; margin: 0 5px;
+    line-height: 80px; font-weight: 900; font-size: 1.2rem;
+    text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    vertical-align: middle;
+}
+.score-label {
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+    .main-wrapper { grid-template-columns: 1fr; }
+    .header-box { flex-direction: column; text-align: center; }
+    .header-box > div { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="chips-background" id="chipsBG"></div>
+
+<div class="main-wrapper">
+    <div class="glass-panel header-box">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="https://i.ibb.co/zW8ZMt1r/IMG-4867.jpg" alt="Flipzy" class="profile-pic">
+            <div style="text-align: left;">
+                <span class="badge-live">🔴 LIVE 14H00</span>
+                <h1 style="font-family: Montserrat; font-weight: 900; font-size: 2.2rem; margin: 0; line-height: 1; background: linear-gradient(to right, #fff, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FLIPZY</h1>
+                <a href="https://dlive.tv/Flipzycasino?ref=flipzycasino" target="_blank" class="join-live-btn">
+                    <i class="fas fa-play"></i> REJOINDRE
+                </a>
+            </div>
+        </div>
+        <div class="tokens-display">
+            <i class="fas fa-coins"></i> <span id="user-tokens">1000</span>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="text-align: center;">
+        <h3 style="font-family: Montserrat; font-weight: 900; margin: 0; color: var(--dlive-yellow);">DAILY REWARD</h3>
+        <p style="opacity: 0.6; font-size: 0.8rem; margin: 10px 0 20px 0;">+1 à 1000 jetons gratuits (24h)</p>
+        <button id="openDailyBtn" class="btn-action" style="background: var(--dlive-yellow);">Daily Spin</button>
+    </div>
+
+    <div class="glass-panel" style="text-align: center; border-color: rgba(255, 0, 85, 0.3);">
+        <div class="info-tooltip-wrapper">
+            <i class="fas fa-info-circle"></i>
+            <div class="tooltip-box">
+                <strong style="color:var(--primary-color); font-size: 0.85rem; font-family: Montserrat;">🎁 LOTS À GAGNER :</strong>
+                <ul>
+                    <li><span style="color:var(--primary-color)">●</span> Bonus Fruit Party 20$</li>
+                    <li><span style="color:var(--wheel-red)">●</span> Cash 10$</li>
+                    <li><span style="color:#555">●</span> Perdu...</li>
+                </ul>
+            </div>
+        </div>
+        <h3 style="font-family: Montserrat; font-weight: 900; margin: 0; color: var(--wheel-red);">FLIPZY FORTUNE</h3>
+        <p style="opacity: 0.6; font-size: 0.8rem; margin: 10px 0 20px 0;">Coût: 1000 pts | Cash & Bonus</p>
+        <button id="openPremiumBtn" class="btn-action" style="background: var(--wheel-red); color: white;">Tenter (1000)</button>
+    </div>
+
+    <div class="glass-panel" id="openBJBtn" style="cursor: pointer;">
+        <h3 style="color: var(--primary-color); font-family: Montserrat; font-weight: 900; margin: 0;">BLACKJACK</h3>
+        <p style="font-size: 0.8rem; opacity: 0.6;">Double tes jetons ici.</p>
+        <div class="btn-partner">JOUER</div>
+    </div>
+
+    <div class="glass-panel">
+        <h3 style="color: #fff; font-family: Montserrat; font-weight: 900; margin: 0;">SHUFFLE</h3>
+        <p style="font-size: 0.8rem; opacity: 0.6;">Code : FLIPZY</p>
+        <a href="#" class="btn-partner">ACCÉDER</a>
+    </div>
+
+    <a href="https://discord.gg/bcfqZkPNe" target="_blank" class="glass-panel" style="text-align:center;">
+        <i class="fab fa-discord" style="color: #5865F2; margin-right: 12px; font-size: 1.2rem;"></i> DISCORD
+    </a>
+    <a href="https://www.instagram.com/flipzycasino" target="_blank" class="glass-panel" style="text-align:center;">
+        <i class="fab fa-instagram" style="color: #E1306C; margin-right: 12px; font-size: 1.2rem;"></i> INSTAGRAM
+    </a>
+
+    <div style="grid-column: span 2; text-align: center; color: #444; font-size: 0.75rem; margin-top: 10px;">
+        <p>🔞 JEU RESPONSABLE : 09 74 75 13 13. INTERDIT AUX MOINS DE 18 ANS.</p>
+    </div>
+</div>
+
+<div id="modalDaily" class="modal-overlay">
+    <div class="modal-box">
+        <span class="close-modal" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:2rem;">&times;</span>
+        <h2 style="color: var(--dlive-yellow); font-family: Montserrat;">DAILY SPIN</h2>
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div id="wheelDaily" class="wheel-circle" style="background: conic-gradient(#ffd200 0 90deg, #222 90deg 180deg, #ffd200 180deg 270deg, #222 270deg 360deg);"></div>
+        </div>
+        <button id="spinDailyBtn" class="btn-action">SPIN GRATUIT</button>
+        <p id="daily-res" style="margin-top:20px; font-weight:900;"></p>
+    </div>
+</div>
+
+<div id="modalPremium" class="modal-overlay">
+    <div class="modal-box" style="border-color: var(--wheel-red);">
+        <span class="close-modal" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:2rem;">&times;</span>
+        <h2 style="color: var(--wheel-red); font-family: Montserrat;">FLIPZY FORTUNE</h2>
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div id="wheelPremium" class="wheel-circle" style="background: conic-gradient(var(--primary-color) 0 60deg, #050505 60deg 120deg, var(--wheel-red) 120deg 180deg, var(--primary-color) 180deg 240deg, #050505 240deg 300deg, var(--wheel-red) 300deg 360deg);"></div>
+        </div>
+        <button id="spinPremiumBtn" class="btn-action" style="background: var(--wheel-red); color: white;">SPIN (1000 PTS)</button>
+        <p id="premium-res" style="margin-top:20px; font-weight:900;"></p>
+    </div>
+</div>
+
+<div id="modalBlackjack" class="modal-overlay">
+    <div class="modal-box" style="max-width: 550px;">
+        <span class="close-modal" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:2rem;">&times;</span>
+        <h2 style="color: var(--primary-color); font-family: Montserrat; font-weight: 900;">BLACKJACK</h2>
+        
+        <div id="bj-area">
+            <p style="margin-bottom: 20px;">Combien de jetons veux-tu miser ?</p>
+            <input type="number" id="bj-bet" value="100" style="background:#111; color:#fff; border:1px solid #333; padding:15px; border-radius:10px; width:120px; text-align:center; font-size:1.2rem; font-weight:bold;">
+            <button id="bj-start" class="btn-action" style="margin-top:20px;">DISTRIBUER</button>
+        </div>
+
+        <div id="bj-play" style="display:none; margin-top:20px; text-align: left;">
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                <p style="margin: 0 0 10px 0; color: #aaa; font-size: 0.8rem;">BANQUE <span id="d-score" class="score-label"></span></p>
+                <div id="d-cards" style="min-height: 85px;"></div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;">
+                <p style="margin: 0 0 10px 0; color: #aaa; font-size: 0.8rem;">TA MAIN <span id="p-score" class="score-label"></span></p>
+                <div id="p-cards" style="min-height: 85px;"></div>
+            </div>
+
+            <div id="bj-controls" style="display:flex; gap:10px; margin-top:20px;">
+                <button id="bj-hit" class="btn-action">CARTE</button>
+                <button id="bj-stay" class="btn-action" style="background:#222; color:#fff;">RESTER</button>
+            </div>
+            <button id="bj-restart" class="btn-action" style="display:none; margin-top:20px; background:var(--dlive-yellow);">REJOUER</button>
+        </div>
+        <p id="bj-res" style="margin-top:20px; font-weight:900; font-size:1.3rem;"></p>
+    </div>
+</div>
+
+<script>
+// --- SYSTÈME DE POINTS ---
+let tokens = parseInt(localStorage.getItem('flipzy_tokens')) || 500;
+const tokenEl = document.getElementById('user-tokens');
+function updatePoints(amt) { tokens += amt; tokenEl.innerText = tokens; localStorage.setItem('flipzy_tokens', tokens); }
+updatePoints(0);
+
+// --- DÉCORATION ---
+for (let i = 0; i < 15; i++) {
+    const chip = document.createElement('img');
+    chip.src = "https://i.ibb.co/DfSPTGsz/pngtree-poker-chip-png-image-6091092.png";
+    chip.className = 'floating-chip';
+    chip.style.width = Math.random() * 40 + 30 + 'px';
+    chip.style.top = Math.random() * 90 + 'vh';
+    chip.style.left = Math.random() * 90 + 'vw';
+    document.getElementById('chipsBG').appendChild(chip);
+}
+
+// --- ROUE DAILY ---
+const modalDaily = document.getElementById('modalDaily');
+const spinDailyBtn = document.getElementById('spinDailyBtn');
+document.getElementById('openDailyBtn').onclick = () => {
+    modalDaily.style.display = 'flex';
+    const last = localStorage.getItem('last_daily');
+    if(last && Date.now() - last < 86400000) {
+        spinDailyBtn.disabled = true;
+        document.getElementById('daily-res').innerText = "REVIENS DEMAIN !";
+    }
+};
+spinDailyBtn.onclick = () => {
+    spinDailyBtn.disabled = true;
+    let rand = Math.random() * 100;
+    let win, deg;
+    if(rand < 5) { win = 1000; deg = 360*5 + 45; }
+    else if(rand < 15) { win = 500; deg = 360*5 + 135; }
+    else if(rand < 50) { win = 100; deg = 360*5 + 225; }
+    else { win = 1; deg = 360*5 + 315; }
+
+    document.getElementById('wheelDaily').style.transform = `rotate(${deg}deg)`;
+    setTimeout(() => {
+        updatePoints(win);
+        document.getElementById('daily-res').innerText = `+ ${win} JETONS !`;
+        localStorage.setItem('last_daily', Date.now());
+    }, 5000);
+};
+
+// --- ROUE PREMIUM ---
+const modalPremium = document.getElementById('modalPremium');
+const spinPremiumBtn = document.getElementById('spinPremiumBtn');
+document.getElementById('openPremiumBtn').onclick = () => modalPremium.style.display = 'flex';
+spinPremiumBtn.onclick = () => {
+    if(tokens < 1000) return alert("Il te faut 1000 jetons !");
+    updatePoints(-1000);
+    spinPremiumBtn.disabled = true;
+    
+    let rand = Math.random() * 100;
+    let win, deg;
+    if(rand < 5) { win = "FRUIT PARTY BONUS"; deg = 360*5 + 30; }
+    else if(rand < 20) { win = "10€ CASH"; deg = 360*5 + 150; }
+    else { win = "PERDU"; deg = 360*5 + 90; }
+
+    document.getElementById('wheelPremium').style.transform = `rotate(${deg}deg)`;
+    setTimeout(() => {
+        document.getElementById('premium-res').innerText = win === "PERDU" ? "DOMMAGE..." : `GAGNÉ : ${win} !`;
+        spinPremiumBtn.disabled = false;
+    }, 5000);
+};
+
+// --- BLACKJACK COMPLET AVEC COMPTAGE ---
+let deck = [], pHand = [], dHand = [], currentBet = 0, bjGameOver = false;
+
+function buildDeck() {
+    const suits = ['♠', '♣', '♥', '♦'];
+    const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+    let d = [];
+    for (let s of suits) for (let v of values) d.push({v, s});
+    return d.sort(() => Math.random() - 0.5);
+}
+
+function getScore(hand) {
+    let score = 0, aces = 0;
+    for (let c of hand) {
+        if (c.v === 'A') { aces++; score += 11; }
+        else if (['J','Q','K'].includes(c.v)) score += 10;
+        else score += parseInt(c.v);
+    }
+    while (score > 21 && aces > 0) { score -= 10; aces--; }
+    return score;
+}
+
+function renderCards(hand, hideSecond = false) {
+    return hand.map((c, i) => {
+        if(hideSecond && i === 1) return `<div class="card" style="background:#222; color:#222">?</div>`;
+        return `<div class="card" style="color:${(c.s==='♥'||c.s==='♦')?'#ff0055':'#000'}">${c.v}${c.s}</div>`;
+    }).join('');
+}
+
+document.getElementById('openBJBtn').onclick = () => document.getElementById('modalBlackjack').style.display='flex';
+
+document.getElementById('bj-start').onclick = () => {
+    currentBet = parseInt(document.getElementById('bj-bet').value);
+    if(currentBet > tokens || currentBet <= 0) return alert("Points insuffisants !");
+    updatePoints(-currentBet);
+    
+    document.getElementById('bj-area').style.display='none';
+    document.getElementById('bj-play').style.display='block';
+    document.getElementById('bj-res').innerText = '';
+    document.getElementById('bj-controls').style.display = 'flex';
+    document.getElementById('bj-restart').style.display = 'none';
+    bjGameOver = false;
+    
+    deck = buildDeck();
+    pHand = [deck.pop(), deck.pop()];
+    dHand = [deck.pop(), deck.pop()]; 
+    
+    updateBJUI(true);
+};
+
+function updateBJUI(hideDealer = false) {
+    document.getElementById('p-cards').innerHTML = renderCards(pHand);
+    document.getElementById('d-cards').innerHTML = renderCards(dHand, hideDealer);
+    
+    let pScore = getScore(pHand);
+    document.getElementById('p-score').innerText = `= ${pScore}`;
+    
+    if(hideDealer) {
+        let visibleDealerScore = getScore([dHand[0]]);
+        document.getElementById('d-score').innerText = `= ${visibleDealerScore} + ?`;
+    } else {
+        document.getElementById('d-score').innerText = `= ${getScore(dHand)}`;
+    }
+}
+
+document.getElementById('bj-hit').onclick = () => {
+    if(bjGameOver) return;
+    pHand.push(deck.pop());
+    updateBJUI(true);
+    
+    if(getScore(pHand) > 21) {
+        endBJ(`BUST ! TU AS PERDU ${currentBet} PTS`, "#ff0055");
+    }
+};
+
+document.getElementById('bj-stay').onclick = () => {
+    if(bjGameOver) return;
+    
+    while(getScore(dHand) < 17) dHand.push(deck.pop());
+    
+    updateBJUI(false); 
+    
+    let p = getScore(pHand);
+    let d = getScore(dHand);
+    
+    if(d > 21 || p > d) {
+        updatePoints(currentBet * 2);
+        endBJ(`GAGNÉ ! +${currentBet} PTS`, "var(--primary-color)");
+    } else if (d > p) {
+        endBJ(`LA BANQUE GAGNE ! -${currentBet} PTS`, "#ff0055");
+    } else {
+        updatePoints(currentBet); 
+        endBJ("ÉGALITÉ ! (Mise remboursée)", "#fff");
+    }
+};
+
+function endBJ(msg, color) {
+    bjGameOver = true;
+    updateBJUI(false); 
+    let res = document.getElementById('bj-res');
+    res.innerText = msg;
+    res.style.color = color;
+    
+    document.getElementById('bj-controls').style.display = 'none';
+    document.getElementById('bj-restart').style.display = 'block';
+}
+
+document.getElementById('bj-restart').onclick = () => {
+    document.getElementById('bj-area').style.display='block';
+    document.getElementById('bj-play').style.display='none';
+    document.getElementById('bj-res').innerText = '';
+};
+
+// FERMETURE MODALS
+document.querySelectorAll('.close-modal').forEach(b => {
+    b.onclick = () => { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
+});
+</script>
+</body>
+</html>
