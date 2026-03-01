@@ -158,7 +158,7 @@
     <div class="glass-panel" style="grid-column: span 2; text-align: center; border: 2px solid var(--primary-color); background: linear-gradient(145deg, rgba(0,255,163,0.1) 0%, rgba(0,0,0,0.8) 100%); animation: pulse-glow 3s infinite;">
         <h2 style="font-family: Montserrat; color: var(--primary-color); margin-top: 0; font-size: 2rem; font-weight:900; text-transform: uppercase; letter-spacing: 1px;">Partenaire Exclusif Shuffle</h2>
         <p style="font-size: 1.1rem; margin-bottom: 25px; opacity:0.8;">Utilise le code <strong style="color:var(--primary-color)">FLIPZY</strong> pour débloquer les meilleurs bonus !</p>
-        <a href="#" target="_blank" class="btn-action" style="font-size: 1.3rem; padding: 20px 50px; display: inline-block; width: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🚀 JOUER SUR SHUFFLE</a>
+        <a href="https://shuffle.com?r=Flipzy" target="_blank" class="btn-action" style="font-size: 1.3rem; padding: 20px 50px; display: inline-block; width: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🚀 JOUER SUR SHUFFLE</a>
     </div>
 
     <div class="glass-panel" style="text-align:center;">
@@ -265,6 +265,7 @@
 
             <div id="bj-controls" style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="bj-hit" class="btn-action">CARTE</button>
+                <button id="bj-double" class="btn-action" style="background: var(--dlive-yellow); color: #000;">DOUBLER</button>
                 <button id="bj-stay" class="btn-action" style="background:#333; color:white;">RESTER</button>
             </div>
             <p id="bj-res" style="margin-top: 15px; font-weight: bold; font-size: 1.2rem; text-align: center;"></p>
@@ -434,7 +435,7 @@
         }, 4000);
     });
 
-    // --- JEU : CADEAUX (Textes et lots corrigés) ---
+    // --- JEU : CADEAUX (Probabilités ajustées) ---
     document.getElementById('spinPremiumBtn').addEventListener('click', async () => {
         if(tokens < 1000) return document.getElementById('premium-res').innerText = "Pas assez de points (1000 requis).";
         const btn = document.getElementById('spinPremiumBtn');
@@ -443,10 +444,20 @@
         await syncTokens(tokens - 1000);
         
         let rand = Math.random() * 100, win, deg;
-        // CORRECTION LOTS : Rand > 5 = Fruit Party | Rand < 20 = Cash 10
-        if(rand < 5) { win = "Bonus Fruit Party (20$)"; deg = 360*5 + 30; }
-        else if(rand < 20) { win = "Cash 10$"; deg = 360*5 + 150; }
-        else { win = "PERDU"; deg = 360*5 + 90; }
+        
+        // NOUVELLES PROBABILITÉS
+        if(rand < 0.0001) { 
+            // 0,0001% de chance
+            win = "Bonus Fruit Party (20$)"; deg = 360*5 + 30; 
+        }
+        else if(rand < 0.0011) { 
+            // 0,001% de chance (0.0011 - 0.0001)
+            win = "Cash 10$"; deg = 360*5 + 150; 
+        }
+        else { 
+            // Tout le reste (99.9989%)
+            win = "PERDU"; deg = 360*5 + 90; 
+        }
 
         document.getElementById('wheelPremium').style.transform = `rotate(${deg}deg)`;
         setTimeout(async () => {
@@ -462,7 +473,7 @@
         }, 4000);
     });
 
-    // --- JEU : BLACKJACK (Avec comptage) ---
+    // --- JEU : BLACKJACK (Avec comptage et bouton Doubler) ---
     let deck = [], pHand = [], dHand = [], bet = 0;
 
     document.getElementById('bj-go').addEventListener('click', async () => {
@@ -480,7 +491,14 @@
         deck = ['2','3','4','5','6','7','8','9','10','J','Q','K','A','2','3','4','5','6','7','8','9','10','J','Q','K','A','2','3','4','5','6','7','8','9','10','J','Q','K','A'].sort(() => Math.random() - 0.5);
         pHand = [deck.pop(), deck.pop()];
         dHand = [deck.pop(), deck.pop()];
+        
+        document.getElementById('bj-double').style.display = 'block'; // Affiche le bouton doubler
         renderBJ(true);
+
+        // Auto-détection du Blackjack x2,5
+        if (getBJScore(pHand) === 21) {
+            setTimeout(() => document.getElementById('bj-stay').click(), 600);
+        }
     }
 
     function renderBJ(hideDealer) {
@@ -497,19 +515,53 @@
         }
     }
 
+    // Bouton Carte (Tirer)
     document.getElementById('bj-hit').addEventListener('click', () => {
+        document.getElementById('bj-double').style.display = 'none'; // Impossible de doubler après avoir tiré
         pHand.push(deck.pop());
         renderBJ(true);
         if(getBJScore(pHand) > 21) endBJ("PERDU (BUST)", "var(--wheel-red)");
     });
 
+    // Bouton Doubler (Double Down)
+    document.getElementById('bj-double').addEventListener('click', async () => {
+        if(tokens < bet) return alert("Pas assez de points pour doubler !");
+        
+        await syncTokens(tokens - bet); // Enlève la 2ème mise
+        bet = bet * 2; // Double la mise en cours
+        document.getElementById('bj-double').style.display = 'none';
+        
+        pHand.push(deck.pop()); // 1 seule carte
+        renderBJ(true);
+        
+        if(getBJScore(pHand) > 21) {
+            endBJ("PERDU (BUST)", "var(--wheel-red)");
+        } else {
+            setTimeout(() => document.getElementById('bj-stay').click(), 500); // Passe le tour à la banque automatiquement
+        }
+    });
+
+    // Bouton Rester (Fin de tour)
     document.getElementById('bj-stay').addEventListener('click', async () => {
+        document.getElementById('bj-double').style.display = 'none';
         while(getBJScore(dHand) < 17) dHand.push(deck.pop());
         renderBJ(false); 
+        
         let ps = getBJScore(pHand), ds = getBJScore(dHand);
-        if(ds > 21 || ps > ds) {
-            await syncTokens(tokens + (bet * 2));
-            endBJ(`GAGNÉ ! +${bet*2}`, "var(--primary-color)");
+        let pBJ = pHand.length === 2 && ps === 21; // Vérifie le Blackjack naturel du joueur
+        let dBJ = dHand.length === 2 && ds === 21; // Vérifie le Blackjack naturel de la banque
+
+        // Résolution du gagnant
+        if (pBJ && !dBJ) {
+            let winAmount = Math.floor(bet * 2.5); // Gain x2,5 pour un Blackjack
+            await syncTokens(tokens + winAmount);
+            endBJ(`BLACKJACK ! +${winAmount}`, "var(--primary-color)");
+        } else if (pBJ && dBJ) {
+            await syncTokens(tokens + bet);
+            endBJ("ÉGALITÉ (2 BLACKJACKS)", "white");
+        } else if (ds > 21 || ps > ds) {
+            await syncTokens(tokens + (bet * 2)); // Gain classique x2
+            endBJ(`GAGNÉ ! +${bet * 2}`, "var(--primary-color)");
         } else if (ps === ds) {
             await syncTokens(tokens + bet);
             endBJ("ÉGALITÉ", "white");
