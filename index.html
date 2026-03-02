@@ -15,6 +15,7 @@
             --glass-border: rgba(255, 255, 255, 0.05);
             --wheel-red: #ff0055;
             --dlive-yellow: #ffd200;
+            --mines-cyan: #00d2ff;
         }
 
         body {
@@ -63,6 +64,10 @@
             border: 1px solid var(--primary-color); color: var(--primary-color); font-weight: 900;
         }
 
+        /* CLASSES D'ALIGNEMENT DU HEADER (AJOUT POUR LES RÉSEAUX) */
+        .profile-text-container { text-align: left; }
+        .social-links-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
         /* BTNS */
         .btn-action {
             background: var(--primary-color); color: #000; padding: 15px;
@@ -94,8 +99,31 @@
         .wheel-circle { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #222; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #fff; z-index: 20; }
 
+        /* ANIMATION DU POINTEUR DE LA ROUE */
+        @keyframes pointer-tick {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(-12deg); }
+            100% { transform: translateX(-50%) rotate(0deg); }
+        }
+        .pointer-spinning {
+            animation: pointer-tick 0.12s infinite; 
+            transform-origin: top center; 
+        }
+
         .card { display: inline-block; background: #fff; color: #000; width: 45px; height: 65px; border-radius: 5px; margin: 0 3px; line-height: 65px; font-weight: 900; text-align: center; }
         .score-label { color: var(--primary-color); font-weight: bold; font-size: 1rem; margin-left: 10px; }
+
+        /* JEU DES MINES CSS */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px auto; max-width: 320px; }
+        .mine-cell {
+            background: rgba(255,255,255,0.1); border-radius: 8px; height: 55px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer;
+            transition: 0.2s; box-shadow: inset 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .mine-cell:hover:not(.revealed) { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .mine-cell.revealed.safe { background: rgba(0, 255, 163, 0.15); box-shadow: inset 0 0 10px var(--primary-color); }
+        .mine-cell.revealed.bomb { background: rgba(255, 0, 85, 0.3); box-shadow: inset 0 0 15px var(--wheel-red); }
+        .mine-cell.revealed.dimmed { opacity: 0.4; }
 
         /* FOOTER PREVENTION */
         .footer-prevention {
@@ -122,6 +150,8 @@
         @media (max-width: 768px) {
             .main-wrapper { grid-template-columns: 1fr; }
             .header-box { flex-direction: column; gap: 15px; text-align: center; }
+            .profile-text-container { text-align: center; }
+            .social-links-row { justify-content: center; }
         }
     </style>
 </head>
@@ -132,16 +162,24 @@
 <div class="main-wrapper" id="hub-content">
     
     <div class="glass-panel header-box">
-        <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center;">
             <img src="https://i.ibb.co/zW8ZMt1r/IMG-4867.jpg" class="profile-pic">
-            <div style="text-align: left;">
+            <div class="profile-text-container">
                 <span class="badge-live">🔴 LIVE 14H00</span>
                 <h1 style="margin:0; font-family: Montserrat; font-weight:900; font-size: 2.2rem; background: linear-gradient(to right, #fff, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FLIPZY</h1>
                 
-                <a href="https://dlive.tv/Flipzycasino?ref=flipzycasino" target="_blank" class="btn-action" style="background: var(--dlive-yellow); padding: 12px 25px; font-size: 1rem; display: inline-flex; align-items:center; gap:8px; margin-top: 10px;">
-                    <i class="fas fa-play"></i> REJOINDRE LE LIVE
-                </a>
-                <br>
+                <div class="social-links-row">
+                    <a href="https://dlive.tv/Flipzycasino?ref=flipzycasino" target="_blank" class="btn-action" style="background: var(--dlive-yellow); padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
+                        <i class="fas fa-play"></i> REJOINDRE LE LIVE
+                    </a>
+                    <a href="https://discord.gg/bcfqZkPNe" target="_blank" class="btn-action" style="background: #5865F2; color: white; padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
+                        <i class="fab fa-discord"></i> DISCORD
+                    </a>
+                    <a href="https://www.instagram.com/flipzycasino" target="_blank" class="btn-action" style="background: #E1306C; color: white; padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
+                        <i class="fab fa-instagram"></i> INSTA
+                    </a>
+                </div>
+                
                 <button id="logout-btn" style="display:none; background:none; border:none; color:#ff0055; cursor:pointer; padding:0; font-size:0.8rem; font-weight:bold; margin-top: 15px; text-decoration: underline;">Déconnexion</button>
             </div>
         </div>
@@ -186,16 +224,18 @@
         <button id="openPremium" class="btn-partner" style="background: var(--wheel-red); width: 100%; box-sizing: border-box;"><i class="fas fa-gem"></i> Tenter la Chance</button>
     </div>
 
-    <div class="glass-panel" style="grid-column: span 2; text-align: center; cursor: pointer;" id="openBJ">
-        <h3 style="color: var(--primary-color); margin:0; font-family: Montserrat; font-weight:900;">BLACKJACK MULTIPLICATEUR</h3>
-        <p style="font-size:0.9rem; opacity:0.7;">Double tes points ici.</p>
-        <div class="btn-partner" style="font-size:1.1rem;"><i class="fas fa-spade"></i> JOUER AU BLACKJACK</div>
+    <div class="glass-panel" style="text-align: center; cursor: pointer;" id="openBJ">
+        <h3 style="color: var(--primary-color); margin:0; font-family: Montserrat; font-weight:900;">BLACKJACK</h3>
+        <p style="font-size:0.9rem; opacity:0.7;">Affronte le croupier.</p>
+        <div class="btn-partner" style="font-size:1.1rem;"><i class="fas fa-spade"></i> JOUER</div>
     </div>
 
-    <div class="glass-panel" style="grid-column: span 2; display: flex; justify-content: center; gap: 20px;">
-        <a href="https://discord.gg/bcfqZkPNe" target="_blank" class="btn-partner" style="background: #5865F2; border:none; width: 220px; margin: 0; font-size:1rem;"><i class="fab fa-discord"></i> DISCORD</a>
-        <a href="https://www.instagram.com/flipzycasino" target="_blank" class="btn-partner" style="background: #E1306C; border:none; width: 220px; margin: 0; font-size:1rem;"><i class="fab fa-instagram"></i> INSTAGRAM</a>
+    <div class="glass-panel" style="text-align: center; cursor: pointer; border-color: rgba(0, 210, 255, 0.3);" id="openMines">
+        <h3 style="color: var(--mines-cyan); margin:0; font-family: Montserrat; font-weight:900;">MINES</h3>
+        <p style="font-size:0.9rem; opacity:0.7;">Trouve les diamants.</p>
+        <div class="btn-partner" style="font-size:1.1rem; border-color: var(--mines-cyan); color: var(--mines-cyan);"><i class="fas fa-bomb"></i> JOUER</div>
     </div>
+
 </div>
 
 <div class="footer-prevention">
@@ -208,8 +248,14 @@
         <h2 style="font-family: Montserrat; color: var(--primary-color); margin-top: 0;">CONNEXION</h2>
         <p style="font-size: 0.8rem; opacity: 0.6;">Connecte-toi pour sauvegarder tes points et accéder aux mini-jeux !</p>
         <div id="auth-error" style="color: #ff0055; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; min-height: 20px;"></div>
+        
         <input type="email" id="email" class="auth-input" placeholder="Email">
-        <input type="password" id="password" class="auth-input" placeholder="Mot de passe">
+        
+        <div style="position: relative; width: 90%; display: inline-block;">
+            <input type="password" id="password" class="auth-input" placeholder="Mot de passe" style="width: 100%; margin: 10px 0; padding-right: 40px;">
+            <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; transition: 0.2s;"></i>
+        </div>
+
         <button id="login-btn" class="btn-action" style="margin-top: 10px;">SE CONNECTER</button>
         <button id="signup-btn" class="btn-action" style="background: transparent; color: white; border: 1px solid #333; margin-top: 10px;">S'INSCRIRE</button>
     </div>
@@ -220,7 +266,7 @@
         <span class="close-modal">&times;</span>
         <h2 style="color: var(--dlive-yellow); font-family: Montserrat;">DAILY SPIN</h2>
         <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
+            <div id="pointerDaily" class="wheel-pointer"></div>
             <div id="wheelDaily" class="wheel-circle" style="background: conic-gradient(#ffd200 0 90deg, #222 90deg 180deg, #ffd200 180deg 270deg, #222 270deg 360deg);"></div>
         </div>
         <button id="spinDailyBtn" class="btn-action">SPIN GRATUIT</button>
@@ -233,7 +279,7 @@
         <span class="close-modal">&times;</span>
         <h2 style="color: var(--wheel-red); font-family: Montserrat;">ROUE CADEAUX</h2>
         <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
+            <div id="pointerPremium" class="wheel-pointer"></div>
             <div id="wheelPremium" class="wheel-circle" style="background: conic-gradient(var(--primary-color) 0 60deg, #050505 60deg 120deg, var(--wheel-red) 120deg 180deg, var(--primary-color) 180deg 240deg, #050505 240deg 300deg, var(--wheel-red) 300deg 360deg);"></div>
         </div>
         <button id="spinPremiumBtn" class="btn-action" style="background: var(--wheel-red); color: white;">SPIN (1000 PTS)</button>
@@ -270,6 +316,40 @@
             </div>
             <p id="bj-res" style="margin-top: 15px; font-weight: bold; font-size: 1.2rem; text-align: center;"></p>
             <button id="bj-close" class="btn-action" style="display:none; margin-top:10px; background: var(--dlive-yellow);">REJOUER</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalMines" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px; border-color: var(--mines-cyan);">
+        <span class="close-modal">&times;</span>
+        <h2 style="color: var(--mines-cyan); font-family: Montserrat;">JEU DES MINES</h2>
+        
+        <div id="mines-setup">
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+                <div>
+                    <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #aaa;">Mise :</p>
+                    <input type="number" id="mines-bet" value="100" class="auth-input" style="width: 100px; text-align:center; font-size: 1.1rem; font-weight: bold; margin:0;">
+                </div>
+                <div>
+                    <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #aaa;">Mines (1-24) :</p>
+                    <input type="number" id="mines-count" value="3" min="1" max="24" class="auth-input" style="width: 100px; text-align:center; font-size: 1.1rem; font-weight: bold; margin:0;">
+                </div>
+            </div>
+            <button id="mines-go" class="btn-action" style="background: var(--mines-cyan);">JOUER AUX MINES</button>
+        </div>
+        
+        <div id="mines-game" style="display:none; margin-top:10px;">
+            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; display: flex; justify-content: space-around; font-weight: 900; font-size: 1.1rem;">
+                <span style="color: #888;">Multi: <span id="mines-mult" style="color: var(--mines-cyan);">1.00x</span></span>
+                <span style="color: #888;">Gain: <span id="mines-pot" style="color: var(--primary-color);">0</span> <i class="fas fa-coins" style="font-size:0.9rem;"></i></span>
+            </div>
+            
+            <div id="mines-grid" class="mines-grid"></div>
+            
+            <button id="mines-cashout" class="btn-action" style="margin-top: 15px;">ENCAISSER</button>
+            <p id="mines-res" style="margin-top: 15px; font-weight: bold; font-size: 1.2rem; text-align: center;"></p>
+            <button id="mines-close" class="btn-action" style="display:none; margin-top:10px; background: var(--mines-cyan);">REJOUER</button>
         </div>
     </div>
 </div>
@@ -354,9 +434,11 @@
     // Fermer avec bouton X ou bouton fermer dédié
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Empêche le clic de se propager
+            e.stopPropagation(); 
             const modal = btn.closest('.modal-overlay');
-            if (modal) modal.style.display = 'none';
+            if (modal) {
+                modal.style.display = 'none';
+            }
         });
     });
 
@@ -400,6 +482,7 @@
     document.getElementById('openDaily').addEventListener('click', () => checkAuthAndOpen('modalDaily'));
     document.getElementById('openPremium').addEventListener('click', () => checkAuthAndOpen('modalPremium'));
     document.getElementById('openBJ').addEventListener('click', () => checkAuthAndOpen('modalBJ'));
+    document.getElementById('openMines').addEventListener('click', () => checkAuthAndOpen('modalMines'));
 
     // --- AUTH ---
     document.getElementById('signup-btn').addEventListener('click', () => {
@@ -414,6 +497,26 @@
         signInWithEmailAndPassword(auth, e, p).catch(err => authError.innerText = "Email ou mot de passe incorrect.");
     });
 
+    // --- ERGONOMIE DU FORMULAIRE ---
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePasswordBtn.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        togglePasswordBtn.classList.toggle('fa-eye');
+        togglePasswordBtn.classList.toggle('fa-eye-slash');
+        togglePasswordBtn.style.color = type === 'text' ? 'var(--primary-color)' : '#888';
+    });
+
+    const handleEnterPress = (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('login-btn').click(); 
+        }
+    };
+    document.getElementById('email').addEventListener('keydown', handleEnterPress);
+    document.getElementById('password').addEventListener('keydown', handleEnterPress);
+
     document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
     onAuthStateChanged(auth, (user) => { currentUser = user; updateUI(user); });
 
@@ -424,10 +527,14 @@
         lastDailySpin = Date.now();
         await updateDoc(doc(db, "users", currentUser.uid), { lastDaily: lastDailySpin });
 
+        document.getElementById('pointerDaily').classList.add('pointer-spinning');
+
         let deg = 3600 + Math.floor(Math.random() * 360);
         document.getElementById('wheelDaily').style.transform = `rotate(${deg}deg)`;
         
         setTimeout(async () => {
+            document.getElementById('pointerDaily').classList.remove('pointer-spinning');
+
             let win = Math.floor(Math.random() * 200) + 10;
             document.getElementById('daily-res').innerText = `GAGNÉ : ${win} JETONS !`;
             document.getElementById('daily-res').style.color = "var(--primary-color)";
@@ -435,7 +542,7 @@
         }, 4000);
     });
 
-    // --- JEU : CADEAUX (Probabilités ajustées) ---
+    // --- JEU : CADEAUX ---
     document.getElementById('spinPremiumBtn').addEventListener('click', async () => {
         if(tokens < 1000) return document.getElementById('premium-res').innerText = "Pas assez de points (1000 requis).";
         const btn = document.getElementById('spinPremiumBtn');
@@ -443,24 +550,18 @@
         document.getElementById('premium-res').innerText = "";
         await syncTokens(tokens - 1000);
         
+        document.getElementById('pointerPremium').classList.add('pointer-spinning');
+
         let rand = Math.random() * 100, win, deg;
         
-        // NOUVELLES PROBABILITÉS
-        if(rand < 0.0001) { 
-            // 0,0001% de chance
-            win = "Bonus Fruit Party (20$)"; deg = 360*5 + 30; 
-        }
-        else if(rand < 0.0011) { 
-            // 0,001% de chance (0.0011 - 0.0001)
-            win = "Cash 10$"; deg = 360*5 + 150; 
-        }
-        else { 
-            // Tout le reste (99.9989%)
-            win = "PERDU"; deg = 360*5 + 90; 
-        }
+        if(rand < 0.0001) { win = "Bonus Fruit Party (20$)"; deg = 360*5 + 30; }
+        else if(rand < 0.0011) { win = "Cash 10$"; deg = 360*5 + 150; }
+        else { win = "PERDU"; deg = 360*5 + 90; }
 
         document.getElementById('wheelPremium').style.transform = `rotate(${deg}deg)`;
         setTimeout(async () => {
+            document.getElementById('pointerPremium').classList.remove('pointer-spinning');
+
             if(win !== "PERDU") {
                 document.getElementById('premium-res').innerText = `FÉLICITATIONS ! Tu as gagné : ${win}. On te contacte !`;
                 document.getElementById('premium-res').style.color = "var(--primary-color)";
@@ -473,15 +574,15 @@
         }, 4000);
     });
 
-    // --- JEU : BLACKJACK (Avec comptage et bouton Doubler) ---
-    let deck = [], pHand = [], dHand = [], bet = 0;
+    // --- JEU : BLACKJACK ---
+    let deck = [], pHand = [], dHand = [], bjBet = 0;
 
     document.getElementById('bj-go').addEventListener('click', async () => {
-        bet = parseInt(document.getElementById('bj-bet').value);
-        if (isNaN(bet) || bet <= 0) return alert("Mise invalide");
-        if(bet > tokens) return alert("Pas assez de points !");
+        bjBet = parseInt(document.getElementById('bj-bet').value);
+        if (isNaN(bjBet) || bjBet <= 0) return alert("Mise invalide");
+        if(bjBet > tokens) return alert("Pas assez de points !");
         
-        await syncTokens(tokens - bet);
+        await syncTokens(tokens - bjBet);
         document.getElementById('bj-setup').style.display = 'none';
         document.getElementById('bj-game').style.display = 'block';
         startBJ();
@@ -492,20 +593,17 @@
         pHand = [deck.pop(), deck.pop()];
         dHand = [deck.pop(), deck.pop()];
         
-        document.getElementById('bj-double').style.display = 'block'; // Affiche le bouton doubler
+        document.getElementById('bj-double').style.display = 'block'; 
         renderBJ(true);
 
-        // Auto-détection du Blackjack x2,5
         if (getBJScore(pHand) === 21) {
             setTimeout(() => document.getElementById('bj-stay').click(), 600);
         }
     }
 
     function renderBJ(hideDealer) {
-        // Joueur
         document.getElementById('p-cards').innerHTML = pHand.map(c => `<div class="card" style="color:black;">${c}</div>`).join('');
         document.getElementById('p-score').innerText = `= ${getBJScore(pHand)}`;
-        // Banque
         if(hideDealer) {
             document.getElementById('d-cards').innerHTML = `<div class="card" style="color:black;">${dHand[0]}</div><div class="card" style="background:#444; color:#444;">?</div>`;
             document.getElementById('d-score').innerText = `= ${getBJScore([dHand[0]])} + ?`;
@@ -515,58 +613,54 @@
         }
     }
 
-    // Bouton Carte (Tirer)
     document.getElementById('bj-hit').addEventListener('click', () => {
-        document.getElementById('bj-double').style.display = 'none'; // Impossible de doubler après avoir tiré
+        document.getElementById('bj-double').style.display = 'none'; 
         pHand.push(deck.pop());
         renderBJ(true);
         if(getBJScore(pHand) > 21) endBJ("PERDU (BUST)", "var(--wheel-red)");
     });
 
-    // Bouton Doubler (Double Down)
     document.getElementById('bj-double').addEventListener('click', async () => {
-        if(tokens < bet) return alert("Pas assez de points pour doubler !");
+        if(tokens < bjBet) return alert("Pas assez de points pour doubler !");
         
-        await syncTokens(tokens - bet); // Enlève la 2ème mise
-        bet = bet * 2; // Double la mise en cours
+        await syncTokens(tokens - bjBet); 
+        bjBet = bjBet * 2; 
         document.getElementById('bj-double').style.display = 'none';
         
-        pHand.push(deck.pop()); // 1 seule carte
+        pHand.push(deck.pop()); 
         renderBJ(true);
         
         if(getBJScore(pHand) > 21) {
             endBJ("PERDU (BUST)", "var(--wheel-red)");
         } else {
-            setTimeout(() => document.getElementById('bj-stay').click(), 500); // Passe le tour à la banque automatiquement
+            setTimeout(() => document.getElementById('bj-stay').click(), 500); 
         }
     });
 
-    // Bouton Rester (Fin de tour)
     document.getElementById('bj-stay').addEventListener('click', async () => {
         document.getElementById('bj-double').style.display = 'none';
         while(getBJScore(dHand) < 17) dHand.push(deck.pop());
         renderBJ(false); 
         
         let ps = getBJScore(pHand), ds = getBJScore(dHand);
-        let pBJ = pHand.length === 2 && ps === 21; // Vérifie le Blackjack naturel du joueur
-        let dBJ = dHand.length === 2 && ds === 21; // Vérifie le Blackjack naturel de la banque
+        let pBJ = pHand.length === 2 && ps === 21; 
+        let dBJ = dHand.length === 2 && ds === 21; 
 
-        // Résolution du gagnant
         if (pBJ && !dBJ) {
-            let winAmount = Math.floor(bet * 2.5); // Gain x2,5 pour un Blackjack
+            let winAmount = Math.floor(bjBet * 2.5);
             await syncTokens(tokens + winAmount);
             endBJ(`BLACKJACK ! +${winAmount}`, "var(--primary-color)");
         } else if (pBJ && dBJ) {
-            await syncTokens(tokens + bet);
+            await syncTokens(tokens + bjBet);
             endBJ("ÉGALITÉ (2 BLACKJACKS)", "white");
         } else if (ds > 21 || ps > ds) {
-            await syncTokens(tokens + (bet * 2)); // Gain classique x2
-            endBJ(`GAGNÉ ! +${bet * 2}`, "var(--primary-color)");
+            await syncTokens(tokens + (bjBet * 2));
+            endBJ(`GAGNÉ ! +${bjBet * 2}`, "var(--primary-color)");
         } else if (ps === ds) {
-            await syncTokens(tokens + bet);
+            await syncTokens(tokens + bjBet);
             endBJ("ÉGALITÉ", "white");
         } else {
-            endBJ(`PERDU -${bet}`, "var(--wheel-red)");
+            endBJ(`PERDU -${bjBet}`, "var(--wheel-red)");
         }
     });
 
@@ -595,6 +689,126 @@
         document.getElementById('bj-controls').style.display = 'flex';
         document.getElementById('bj-close').style.display = 'none';
         document.getElementById('bj-res').innerText = "";
+    });
+
+    // --- JEU : MINES ---
+    let mBet = 0, mCount = 0, mBoard = [], mRevealed = 0, mPlaying = false;
+
+    document.getElementById('mines-go').addEventListener('click', async () => {
+        mBet = parseInt(document.getElementById('mines-bet').value);
+        mCount = parseInt(document.getElementById('mines-count').value);
+        if (isNaN(mBet) || mBet <= 0) return alert("Mise invalide");
+        if (isNaN(mCount) || mCount < 1 || mCount > 24) return alert("Nombre de mines invalide (1-24)");
+        if (mBet > tokens) return alert("Pas assez de points !");
+        
+        await syncTokens(tokens - mBet);
+        document.getElementById('mines-setup').style.display = 'none';
+        document.getElementById('mines-game').style.display = 'block';
+        document.getElementById('mines-res').innerText = "";
+        document.getElementById('mines-cashout').style.display = 'block';
+        document.getElementById('mines-close').style.display = 'none';
+        startMines();
+    });
+
+    function getMinesMultiplier(mines, hits) {
+        if (hits === 0) return 1.00;
+        let prob = 1.0;
+        for (let i = 0; i < hits; i++) {
+            prob *= (25 - mines - i) / (25 - i);
+        }
+        return (0.99 / prob); 
+    }
+
+    function updateMinesUI() {
+        let mult = getMinesMultiplier(mCount, mRevealed);
+        document.getElementById('mines-mult').innerText = mult.toFixed(2) + "x";
+        document.getElementById('mines-pot').innerText = Math.floor(mBet * mult);
+    }
+
+    function startMines() {
+        mPlaying = true;
+        mRevealed = 0;
+        mBoard = Array(25).fill(false);
+        
+        let placed = 0;
+        while(placed < mCount) {
+            let r = Math.floor(Math.random() * 25);
+            if(!mBoard[r]) {
+                mBoard[r] = true;
+                placed++;
+            }
+        }
+
+        const grid = document.getElementById('mines-grid');
+        grid.innerHTML = '';
+        for(let i=0; i<25; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'mine-cell';
+            cell.addEventListener('click', () => clickMine(i, cell));
+            grid.appendChild(cell);
+        }
+        updateMinesUI();
+    }
+
+    function clickMine(index, cellElement) {
+        if(!mPlaying || cellElement.classList.contains('revealed')) return;
+
+        cellElement.classList.add('revealed');
+        
+        if(mBoard[index]) {
+            mPlaying = false;
+            cellElement.classList.add('bomb');
+            cellElement.innerHTML = '💣';
+            revealAllMines();
+            endMines(`BOUM ! Tu as tout perdu`, "var(--wheel-red)");
+        } else {
+            cellElement.classList.add('safe');
+            cellElement.innerHTML = '💎';
+            mRevealed++;
+            updateMinesUI();
+            
+            if(mRevealed === 25 - mCount) {
+                document.getElementById('mines-cashout').click();
+            }
+        }
+    }
+
+    function revealAllMines() {
+        const cells = document.getElementById('mines-grid').children;
+        for(let i=0; i<25; i++) {
+            if(!cells[i].classList.contains('revealed')) {
+                cells[i].classList.add('revealed');
+                cells[i].classList.add('dimmed'); 
+                if(mBoard[i]) {
+                    cells[i].innerHTML = '💣';
+                } else {
+                    cells[i].innerHTML = '💎';
+                }
+            }
+        }
+    }
+
+    document.getElementById('mines-cashout').addEventListener('click', async () => {
+        if(!mPlaying || mRevealed === 0) return; 
+        mPlaying = false;
+        let mult = getMinesMultiplier(mCount, mRevealed);
+        let win = Math.floor(mBet * mult);
+        
+        await syncTokens(tokens + win);
+        revealAllMines();
+        endMines(`ENCAISSÉ ! +${win}`, "var(--primary-color)");
+    });
+
+    function endMines(msg, color) {
+        document.getElementById('mines-res').innerText = msg;
+        document.getElementById('mines-res').style.color = color;
+        document.getElementById('mines-cashout').style.display = 'none';
+        document.getElementById('mines-close').style.display = 'block';
+    }
+
+    document.getElementById('mines-close').addEventListener('click', () => {
+        document.getElementById('mines-setup').style.display = 'block';
+        document.getElementById('mines-game').style.display = 'none';
     });
 </script>
 </body>
