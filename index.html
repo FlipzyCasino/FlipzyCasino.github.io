@@ -37,24 +37,46 @@
         .main-wrapper {
             max-width: 1000px; margin: 40px auto; padding: 20px;
             display: grid; grid-template-columns: 1fr 1fr; gap: 25px;
-            padding-bottom: 80px; /* Espace pour le footer */
+            padding-bottom: 80px;
         }
 
         .glass-panel {
-            background: var(--card-bg); backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-radius: 30px;
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+            border: 1px solid transparent !important;
+            border-radius: 30px;
             padding: 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             transition: 0.3s ease; text-decoration: none; color: inherit; position: relative;
         }
 
-        .glass-panel:hover { border-color: var(--primary-color); transform: translateY(-5px); }
+        .glass-panel:hover { 
+            background: 
+                linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(90deg, var(--primary-color), var(--mines-cyan), var(--dlive-yellow), var(--wheel-red), var(--primary-color)) border-box !important;
+            background-size: 100% 100%, 300% 100% !important;
+            animation: borderGradientAnim 2.5s linear infinite !important;
+            box-shadow: 0 15px 35px rgba(0, 255, 163, 0.15) !important;
+            transform: translateY(-5px); 
+        }
+
+        @keyframes borderGradientAnim {
+            0% { background-position: 0% 0%, 0% 50%; }
+            100% { background-position: 0% 0%, 100% 50%; }
+        }
+
+        /* Bruit de fond */
+        body::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05; z-index: -1; pointer-events: none;
+        }
 
         .auth-input {
             width: 90%; padding: 12px; margin: 10px 0; border-radius: 12px;
             border: 1px solid #333; background: #111; color: white; box-sizing: border-box;
         }
 
-        /* HEADER & BADGE */
         .header-box { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 20px;}
         .profile-pic { width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--primary-color); box-shadow: 0 0 20px var(--primary-glow);}
         .badge-live { background: rgba(255, 210, 0, 0.1); color: var(--dlive-yellow); border: 1px solid var(--dlive-yellow); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; display: inline-block; margin-bottom: 8px; }
@@ -62,13 +84,12 @@
         .tokens-display { 
             background: rgba(0,0,0,0.6); padding: 12px 25px; border-radius: 50px; 
             border: 1px solid var(--primary-color); color: var(--primary-color); font-weight: 900;
+            display: inline-block;
         }
 
-        /* CLASSES D'ALIGNEMENT DU HEADER (AJOUT POUR LES RÉSEAUX) */
         .profile-text-container { text-align: left; }
         .social-links-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 
-        /* BTNS */
         .btn-action {
             background: var(--primary-color); color: #000; padding: 15px;
             border-radius: 12px; font-weight: 900; border: none; cursor: pointer; width: 100%;
@@ -83,37 +104,53 @@
         }
         .btn-partner:hover { background: rgba(255,255,255,0.1); }
 
-        /* ANIMATION SHUFFLE */
         @keyframes pulse-glow { 0% { box-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } 50% { box-shadow: 0 0 30px rgba(0, 255, 163, 0.8); } 100% { box-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } }
 
-        /* MODALS */
+        /* ==================== SYSTÈME VIP ==================== */
+        #display-pseudo { transition: 0.2s; cursor: pointer; }
+        #display-pseudo:hover { transform: scale(1.05); }
+
+        .vip-badge {
+            font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: 8px;
+            text-transform: uppercase; margin-left: 8px; vertical-align: middle;
+            text-shadow: none; letter-spacing: 0.5px; display: inline-block; font-family: 'Inter';
+        }
+        .vip-bronze { background: rgba(205, 127, 50, 0.2); color: #cd7f32; border: 1px solid #cd7f32; }
+        .vip-argent { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; border: 1px solid #c0c0c0; }
+        .vip-or { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .vip-platine { background: rgba(229, 228, 226, 0.2); color: #00ffff; border: 1px solid #00ffff; box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+        .vip-diamant { background: rgba(185, 242, 255, 0.2); color: #b9f2ff; border: 1px solid #b9f2ff; box-shadow: 0 0 20px rgba(185, 242, 255, 0.8); animation: diamondPulse 2s infinite; }
+
+        @keyframes diamondPulse { 0% { box-shadow: 0 0 10px rgba(185, 242, 255, 0.5); } 50% { box-shadow: 0 0 30px rgba(185, 242, 255, 1); } 100% { box-shadow: 0 0 10px rgba(185, 242, 255, 0.5); } }
+
+        .text-glow-or { color: #ffd700 !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+        .text-glow-platine { color: #00ffff !important; text-shadow: 0 0 15px rgba(0, 255, 255, 0.8); }
+        .text-glow-diamant { color: #b9f2ff !important; text-shadow: 0 0 20px rgba(185, 242, 255, 1); }
+
+        .vip-progress-bg { background: rgba(255, 255, 255, 0.1); border-radius: 20px; height: 12px; width: 100%; margin-top: 25px; position: relative; border: 1px solid var(--glass-border); }
+        .vip-progress-fill { background: linear-gradient(90deg, var(--primary-color), var(--mines-cyan)); height: 100%; width: 0%; border-radius: 20px; transition: width 1s ease-in-out; box-shadow: 0 0 10px var(--mines-cyan); }
+        .vip-progress-text { position: absolute; width: 100%; text-align: center; top: -18px; font-size: 0.75rem; font-weight: 700; color: #aaa; }
+        /* ===================================================== */
+
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(10px);
             z-index: 1000; justify-content: center; align-items: center;
         }
         .modal-box { background: #0a0a0a; border: 2px solid var(--primary-color); border-radius: 30px; padding: 40px; text-align: center; width: 90%; max-width: 400px; position: relative;}
-        .close-modal { position: absolute; top: 15px; right: 25px; font-size: 2rem; cursor: pointer; color: white; }
+        .close-modal { position: absolute; top: 15px; right: 25px; font-size: 2rem; cursor: pointer; color: white; transition: 0.2s; }
+        .close-modal:hover { color: var(--primary-color); transform: scale(1.1); }
         
         .wheel-wrapper { position: relative; width: 250px; height: 250px; margin: 20px auto; }
         .wheel-circle { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #222; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #fff; z-index: 20; }
 
-        /* ANIMATION DU POINTEUR DE LA ROUE */
-        @keyframes pointer-tick {
-            0% { transform: translateX(-50%) rotate(0deg); }
-            50% { transform: translateX(-50%) rotate(-12deg); }
-            100% { transform: translateX(-50%) rotate(0deg); }
-        }
-        .pointer-spinning {
-            animation: pointer-tick 0.12s infinite; 
-            transform-origin: top center; 
-        }
+        @keyframes pointer-tick { 0% { transform: translateX(-50%) rotate(0deg); } 50% { transform: translateX(-50%) rotate(-12deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
+        .pointer-spinning { animation: pointer-tick 0.12s infinite; transform-origin: top center; }
 
         .card { display: inline-block; background: #fff; color: #000; width: 45px; height: 65px; border-radius: 5px; margin: 0 3px; line-height: 65px; font-weight: 900; text-align: center; }
         .score-label { color: var(--primary-color); font-weight: bold; font-size: 1rem; margin-left: 10px; }
 
-        /* JEU DES MINES CSS */
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px auto; max-width: 320px; }
         .mine-cell {
             background: rgba(255,255,255,0.1); border-radius: 8px; height: 55px; display: flex;
@@ -125,14 +162,12 @@
         .mine-cell.revealed.bomb { background: rgba(255, 0, 85, 0.3); box-shadow: inset 0 0 15px var(--wheel-red); }
         .mine-cell.revealed.dimmed { opacity: 0.4; }
 
-        /* FOOTER PREVENTION */
         .footer-prevention {
             position: fixed; bottom: 0; left: 0; width: 100%; background: #000;
             color: #888; text-align: center; padding: 10px; font-size: 0.75rem;
             border-top: 1px solid #333; z-index: 900;
         }
 
-        /* TOOLTIP HOVER (INFOBULLE) */
         .info-tooltip-wrapper { position: absolute; top: 20px; right: 20px; cursor: pointer; z-index: 100; }
         .info-tooltip-wrapper i { font-size: 1.2rem; color: rgba(255, 255, 255, 0.3); transition: 0.3s; }
         .info-tooltip-wrapper:hover i { color: var(--primary-color); }
@@ -188,8 +223,14 @@
             <button id="nav-login-btn" class="btn-action" style="padding: 12px 20px; font-size: 0.9rem;">SE CONNECTER <i class="fas fa-user"></i></button>
         </div>
 
-        <div class="tokens-display" id="tokens-display" style="display:none;">
-            <i class="fas fa-coins"></i> <span id="user-tokens">0</span>
+        <div id="user-info-container" style="display:none; text-align: center;">
+            <div id="display-pseudo" title="Voir mes statistiques" style="font-family: Montserrat; font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 8px;">
+                <i class="fas fa-user-circle"></i> <span id="pseudo-text"></span>
+                <span id="header-vip-badge" class="vip-badge" style="display:none;"></span>
+            </div>
+            <div class="tokens-display" id="tokens-display">
+                <i class="fas fa-coins"></i> <span id="user-tokens">0</span>
+            </div>
         </div>
     </div>
 
@@ -249,6 +290,7 @@
         <p style="font-size: 0.8rem; opacity: 0.6;">Connecte-toi pour sauvegarder tes points et accéder aux mini-jeux !</p>
         <div id="auth-error" style="color: #ff0055; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; min-height: 20px;"></div>
         
+        <input type="text" id="pseudo-input" class="auth-input" placeholder="Pseudo (Uniquement pour s'inscrire)">
         <input type="email" id="email" class="auth-input" placeholder="Email">
         
         <div style="position: relative; width: 90%; display: inline-block;">
@@ -294,7 +336,14 @@
         
         <div id="bj-setup">
             <p>Combien veux-tu miser ?</p>
-            <input type="number" id="bj-bet" value="100" class="auth-input" style="width: 120px; text-align:center; font-size: 1.2rem; font-weight: bold;">
+            <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 10px;">
+                <input type="number" id="bj-bet" value="100" class="auth-input" style="width: 120px; text-align:center; font-size: 1.2rem; font-weight: bold; margin:0;">
+            </div>
+            <div style="display: flex; gap: 5px; justify-content: center;">
+                <button id="bj-btn-half" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0;">/2</button>
+                <button id="bj-btn-double" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0;">X2</button>
+                <button id="bj-btn-max" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0;">MAX</button>
+            </div>
             <button id="bj-go" class="btn-action" style="margin-top: 15px;">DISTRIBUER</button>
         </div>
         
@@ -326,7 +375,7 @@
         <h2 style="color: var(--mines-cyan); font-family: Montserrat;">JEU DES MINES</h2>
         
         <div id="mines-setup">
-            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 10px;">
                 <div>
                     <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #aaa;">Mise :</p>
                     <input type="number" id="mines-bet" value="100" class="auth-input" style="width: 100px; text-align:center; font-size: 1.1rem; font-weight: bold; margin:0;">
@@ -335,6 +384,11 @@
                     <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #aaa;">Mines (1-24) :</p>
                     <input type="number" id="mines-count" value="3" min="1" max="24" class="auth-input" style="width: 100px; text-align:center; font-size: 1.1rem; font-weight: bold; margin:0;">
                 </div>
+            </div>
+            <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 20px;">
+                <button id="mines-btn-half" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0; border-color: var(--mines-cyan); color: var(--mines-cyan);">/2</button>
+                <button id="mines-btn-double" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0; border-color: var(--mines-cyan); color: var(--mines-cyan);">X2</button>
+                <button id="mines-btn-max" class="btn-partner" style="padding: 5px 10px; font-size: 0.7rem; margin-top:0; border-color: var(--mines-cyan); color: var(--mines-cyan);">MAX</button>
             </div>
             <button id="mines-go" class="btn-action" style="background: var(--mines-cyan);">JOUER AUX MINES</button>
         </div>
@@ -350,6 +404,72 @@
             <button id="mines-cashout" class="btn-action" style="margin-top: 15px;">ENCAISSER</button>
             <p id="mines-res" style="margin-top: 15px; font-weight: bold; font-size: 1.2rem; text-align: center;"></p>
             <button id="mines-close" class="btn-action" style="display:none; margin-top:10px; background: var(--mines-cyan);">REJOUER</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalPseudo" class="modal-overlay" style="z-index: 2000;">
+    <div class="modal-box">
+        <h2 style="font-family: Montserrat; color: var(--primary-color); margin-top: 0;">MISE À JOUR</h2>
+        <p style="font-size: 0.9rem; opacity: 0.8;">Flipzy évolue ! Choisis un pseudo pour continuer à jouer et sauvegarder tes jetons.</p>
+        <div id="pseudo-error" style="color: #ff0055; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; min-height: 20px;"></div>
+        <input type="text" id="forced-pseudo-input" class="auth-input" placeholder="Ton Pseudo">
+        <button id="save-pseudo-btn" class="btn-action" style="margin-top: 10px;">VALIDER</button>
+    </div>
+</div>
+
+<div id="modalProfile" class="modal-overlay">
+    <div class="modal-box" style="max-width: 550px;">
+        <span class="close-modal">&times;</span>
+        <h2 style="font-family: Montserrat; color: #fff; margin-top: 0;">PROFIL DE <span id="profile-name" style="color: var(--primary-color);"></span></h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
+            
+            <div style="grid-column: span 2; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid var(--glass-border); text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0; font-size: 0.8rem; color: #aaa;">Grade Actuel</p>
+                        <h3 id="profile-vip-name" style="margin: 5px 0 0 0; font-size: 1.5rem; color: #fff; text-transform: uppercase;">BRONZE</h3>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0; font-size: 0.8rem; color: #aaa;">Prochain Grade</p>
+                        <h4 id="profile-vip-next" style="margin: 5px 0 0 0; color: #777;">ARGENT</h4>
+                    </div>
+                </div>
+                <div class="vip-progress-bg">
+                    <div class="vip-progress-text"><span id="vip-xp-current">0</span> / <span id="vip-xp-max">10000</span> XP</div>
+                    <div id="vip-progress-bar" class="vip-progress-fill"></div>
+                </div>
+            </div>
+
+            <div style="grid-column: span 2; background: rgba(255, 210, 0, 0.05); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--dlive-yellow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="text-align: left;">
+                    <p style="margin: 0; font-size: 0.8rem; color: #aaa;"><i class="fas fa-piggy-bank" style="color: var(--dlive-yellow);"></i> Coffre-Fort (Rakeback 1%)</p>
+                    <h3 id="stat-rakeback" style="margin: 5px 0 0 0; font-size: 1.8rem; color: var(--dlive-yellow); font-weight: 900;">0.00 <i class="fas fa-coins" style="font-size: 1rem;"></i></h3>
+                </div>
+                <div>
+                    <button id="claim-rakeback-btn" class="btn-action" style="background: var(--dlive-yellow); color: #000; padding: 10px 20px; font-size: 0.9rem; width: auto; box-shadow: 0 0 15px rgba(255, 210, 0, 0.4);">ENCAISSER</button>
+                </div>
+            </div>
+
+            <div style="grid-column: span 2; background: rgba(0, 255, 163, 0.05); padding: 15px; border-radius: 15px; border: 1px solid var(--primary-glow);">
+                <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 5px;"></i>
+                <p style="margin: 0; font-size: 0.9rem; color: #aaa;">Total Généré (Gains cumulés)</p>
+                <h3 id="stat-totalwon" style="margin: 5px 0 0 0; font-size: 1.8rem; color: var(--primary-color); font-weight: 900;">0 <i class="fas fa-coins" style="font-size: 1rem;"></i></h3>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border);">
+                <i class="fas fa-gamepad" style="font-size: 1.2rem; color: var(--mines-cyan); margin-bottom: 5px;"></i>
+                <p style="margin: 0; font-size: 0.8rem; color: #aaa;">Parties Jouées</p>
+                <h3 id="stat-games" style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">0</h3>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border);">
+                <i class="fas fa-trophy" style="font-size: 1.2rem; color: var(--dlive-yellow); margin-bottom: 5px;"></i>
+                <p style="margin: 0; font-size: 0.8rem; color: #aaa;">Max Win</p>
+                <h3 id="stat-maxwin" style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">0 <i class="fas fa-coins" style="font-size: 0.9rem;"></i></h3>
+            </div>
+            
         </div>
     </div>
 </div>
@@ -376,10 +496,18 @@
     let currentUser = null;
     let tokens = 0;
     let lastDailySpin = 0;
+    
+    // VARIABLES STATISTIQUES JOUEUR (Avec Rakeback)
+    let stats = {
+        gamesPlayed: 0,
+        maxWin: 0,
+        totalWon: 0,
+        rakeback: 0
+    };
 
     const authError = document.getElementById('auth-error');
 
-    // --- DECO JETONS FOND (JS) ---
+    // --- DECO JETONS FOND ---
     for (let i = 0; i < 15; i++) {
         const chip = document.createElement('img');
         chip.src = "https://i.ibb.co/DfSPTGsz/pngtree-poker-chip-png-image-6091092.png";
@@ -390,18 +518,50 @@
         document.getElementById('chipsBG').appendChild(chip);
     }
 
+    // --- FONCTION VIP ---
+    function getVIPInfo(total) {
+        if (total < 10000) return { rank: "Bronze", class: "vip-bronze", textClass: "", min: 0, max: 10000, next: "Argent" };
+        if (total < 50000) return { rank: "Argent", class: "vip-argent", textClass: "", min: 10000, max: 50000, next: "Or" };
+        if (total < 250000) return { rank: "Or", class: "vip-or", textClass: "text-glow-or", min: 50000, max: 250000, next: "Platine" };
+        if (total < 1000000) return { rank: "Platine", class: "vip-platine", textClass: "text-glow-platine", min: 250000, max: 1000000, next: "Diamant" };
+        return { rank: "Diamant", class: "vip-diamant", textClass: "text-glow-diamant", min: 1000000, max: 1000000, next: "MAX" };
+    }
+
+    function updateVIPDisplay() {
+        const vip = getVIPInfo(stats.totalWon);
+        
+        const headerBadge = document.getElementById('header-vip-badge');
+        headerBadge.style.display = 'inline-block';
+        headerBadge.className = `vip-badge ${vip.class}`;
+        headerBadge.innerText = vip.rank;
+        document.getElementById('pseudo-text').className = vip.textClass;
+
+        document.getElementById('profile-vip-name').innerText = vip.rank;
+        document.getElementById('profile-vip-name').className = vip.textClass;
+        document.getElementById('profile-vip-next').innerText = vip.next;
+        document.getElementById('vip-xp-current').innerText = stats.totalWon;
+        document.getElementById('vip-xp-max').innerText = vip.max === vip.min ? "MAX" : vip.max;
+
+        let pct = 100;
+        if (vip.max > vip.min) {
+            pct = ((stats.totalWon - vip.min) / (vip.max - vip.min)) * 100;
+        }
+        document.getElementById('vip-progress-bar').style.width = `${pct}%`;
+    }
+
     // --- UI & DATA ---
     const updateUI = (user) => {
         if(user) {
             document.getElementById('logged-out-nav').style.display = 'none';
             document.getElementById('logout-btn').style.display = 'block';
-            document.getElementById('tokens-display').style.display = 'block';
+            document.getElementById('user-info-container').style.display = 'block';
             document.getElementById('modalAuth').style.display = 'none';
             loadUserData(user.uid);
         } else {
             document.getElementById('logged-out-nav').style.display = 'block';
             document.getElementById('logout-btn').style.display = 'none';
-            document.getElementById('tokens-display').style.display = 'none';
+            document.getElementById('user-info-container').style.display = 'none';
+            document.getElementById('pseudo-text').innerText = "";
         }
     };
 
@@ -410,52 +570,115 @@
             const docRef = doc(db, "users", uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                tokens = docSnap.data().tokens || 0;
-                lastDailySpin = docSnap.data().lastDaily || 0;
+                const data = docSnap.data();
+                tokens = data.tokens || 0;
+                lastDailySpin = data.lastDaily || 0;
+                
+                stats.gamesPlayed = data.gamesPlayed || 0;
+                stats.maxWin = data.maxWin || 0;
+                stats.totalWon = data.totalWon || 0;
+                stats.rakeback = data.rakeback || 0;
+                
+                if (data.pseudo) {
+                    document.getElementById('pseudo-text').innerText = data.pseudo;
+                    updateVIPDisplay();
+                } else {
+                    document.getElementById('modalPseudo').style.display = 'flex';
+                }
             } else {
                 tokens = 500;
                 lastDailySpin = 0;
-                await setDoc(docRef, { tokens: tokens, lastDaily: 0 });
+                document.getElementById('modalPseudo').style.display = 'flex';
             }
-            document.getElementById('user-tokens').innerText = tokens;
+            document.getElementById('user-tokens').innerText = Math.floor(tokens);
         } catch (error) { console.error("Erreur Firestore :", error); }
     };
 
     async function syncTokens(newAmount) {
-        tokens = newAmount;
-        document.getElementById('user-tokens').innerText = tokens;
+        tokens = Number(newAmount);
+        document.getElementById('user-tokens').innerText = Math.floor(tokens);
         if(currentUser) { await updateDoc(doc(db, "users", currentUser.uid), { tokens: tokens }); }
     }
 
-    // --- MODALS (Gestion des ouvertures/fermetures) ---
+    // --- FONCTION RAKEBACK (Ajoute 1% au coffre) ---
+    async function addRakeback(betAmount) {
+        let rbAmount = betAmount * 0.01;
+        stats.rakeback += rbAmount;
+        if(currentUser) {
+            await updateDoc(doc(db, "users", currentUser.uid), { rakeback: stats.rakeback });
+        }
+        if(document.getElementById('modalProfile').style.display === 'flex') {
+            document.getElementById('stat-rakeback').innerHTML = `${stats.rakeback.toFixed(2)} <i class="fas fa-coins" style="font-size: 1rem;"></i>`;
+        }
+    }
+
+    // --- ENCAISSER RAKEBACK ---
+    document.getElementById('claim-rakeback-btn').addEventListener('click', async () => {
+        if (stats.rakeback >= 1) { // Minimum 1 jeton pour claim
+            let rbToClaim = Math.floor(stats.rakeback);
+            stats.rakeback -= rbToClaim; // On garde les décimales restantes
+            
+            await syncTokens(tokens + rbToClaim);
+            
+            if (currentUser) {
+                await updateDoc(doc(db, "users", currentUser.uid), { rakeback: stats.rakeback });
+            }
+            
+            document.getElementById('stat-rakeback').innerHTML = `${stats.rakeback.toFixed(2)} <i class="fas fa-coins" style="font-size: 1rem;"></i>`;
+            
+            // Animation du bouton
+            const btn = document.getElementById('claim-rakeback-btn');
+            let originalText = btn.innerText;
+            btn.innerText = `+${rbToClaim} ENCAISSÉ !`;
+            btn.style.background = "var(--primary-color)";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "var(--dlive-yellow)";
+            }, 2000);
+        }
+    });
+
+    async function saveStats(winAmount) {
+        stats.gamesPlayed++;
+        if (winAmount > 0) {
+            stats.totalWon += winAmount;
+            if (winAmount > stats.maxWin) {
+                stats.maxWin = winAmount;
+            }
+        }
+        if (currentUser) {
+            await updateDoc(doc(db, "users", currentUser.uid), { 
+                gamesPlayed: stats.gamesPlayed,
+                totalWon: stats.totalWon,
+                maxWin: stats.maxWin
+            });
+        }
+        updateVIPDisplay();
+    }
+
+    // --- MODALS ---
     const openModal = (id) => document.getElementById(id).style.display = 'flex';
     const closeAllModals = () => document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
     
-    // Fermer avec bouton X ou bouton fermer dédié
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation(); 
             const modal = btn.closest('.modal-overlay');
-            if (modal) {
-                modal.style.display = 'none';
-            }
+            if (modal) modal.style.display = 'none';
         });
     });
 
-    // Fermer en cliquant à l'extérieur
     window.addEventListener('click', (event) => {
-        if (event.target.className === 'modal-overlay') {
+        if (event.target.className === 'modal-overlay' && event.target.id !== 'modalPseudo') {
             event.target.style.display = 'none';
         }
     });
 
-    // Vérification de connexion
     const checkAuthAndOpen = (modalId) => {
         if (!currentUser) {
             authError.innerText = "Connecte-toi ou inscris-toi pour jouer !";
             openModal('modalAuth');
         } else {
-            // Check Daily 24h
             if (modalId === 'modalDaily') {
                 const now = Date.now();
                 const timePassed = now - lastDailySpin;
@@ -476,31 +699,66 @@
         }
     };
 
-    // Events ouvertures modals
+    // --- OUVERTURE DU PROFIL ---
+    document.getElementById('display-pseudo').addEventListener('click', () => {
+        if(!currentUser) return;
+        document.getElementById('profile-name').innerText = document.getElementById('pseudo-text').innerText;
+        document.getElementById('profile-name').className = document.getElementById('pseudo-text').className;
+        document.getElementById('stat-rakeback').innerHTML = `${stats.rakeback.toFixed(2)} <i class="fas fa-coins" style="font-size: 1rem;"></i>`;
+        document.getElementById('stat-games').innerText = stats.gamesPlayed;
+        document.getElementById('stat-maxwin').innerHTML = `${stats.maxWin} <i class="fas fa-coins" style="font-size: 0.9rem;"></i>`;
+        document.getElementById('stat-totalwon').innerHTML = `${stats.totalWon} <i class="fas fa-coins" style="font-size: 1rem;"></i>`;
+        openModal('modalProfile');
+    });
+
     document.getElementById('nav-login-btn').addEventListener('click', () => { authError.innerText = ""; openModal('modalAuth'); });
-    
     document.getElementById('openDaily').addEventListener('click', () => checkAuthAndOpen('modalDaily'));
     document.getElementById('openPremium').addEventListener('click', () => checkAuthAndOpen('modalPremium'));
     document.getElementById('openBJ').addEventListener('click', () => checkAuthAndOpen('modalBJ'));
     document.getElementById('openMines').addEventListener('click', () => checkAuthAndOpen('modalMines'));
 
     // --- AUTH ---
-    document.getElementById('signup-btn').addEventListener('click', () => {
-        const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        if(!e || !p) return authError.innerText = "Remplis l'email et le mot de passe.";
-        createUserWithEmailAndPassword(auth, e, p).catch(err => authError.innerText = "Erreur : " + err.message);
-    });
-
     document.getElementById('login-btn').addEventListener('click', () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
         if(!e || !p) return authError.innerText = "Remplis l'email et le mot de passe.";
         signInWithEmailAndPassword(auth, e, p).catch(err => authError.innerText = "Email ou mot de passe incorrect.");
     });
 
-    // --- ERGONOMIE DU FORMULAIRE ---
+    document.getElementById('signup-btn').addEventListener('click', async () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        const pseudo = document.getElementById('pseudo-input').value.trim();
+
+        if(!e || !p) return authError.innerText = "Remplis l'email et le mot de passe.";
+        if(!pseudo) return authError.innerText = "Le pseudo est obligatoire pour l'inscription.";
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, e, p);
+            await setDoc(doc(db, "users", userCredential.user.uid), { 
+                tokens: 500, lastDaily: 0, pseudo: pseudo,
+                gamesPlayed: 0, maxWin: 0, totalWon: 0, rakeback: 0
+            });
+        } catch(err) { authError.innerText = "Erreur : " + err.message; }
+    });
+
+    document.getElementById('save-pseudo-btn').addEventListener('click', async () => {
+        const pseudo = document.getElementById('forced-pseudo-input').value.trim();
+        const errDiv = document.getElementById('pseudo-error');
+        if(!pseudo) return errDiv.innerText = "Veuillez entrer un pseudo.";
+        if(pseudo.length < 3) return errDiv.innerText = "Le pseudo doit faire au moins 3 caractères.";
+
+        if(currentUser) {
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), { pseudo: pseudo }, { merge: true });
+                document.getElementById('pseudo-text').innerText = pseudo;
+                updateVIPDisplay();
+                document.getElementById('modalPseudo').style.display = 'none';
+            } catch(e) { errDiv.innerText = "Erreur lors de la sauvegarde."; }
+        }
+    });
+
     const togglePasswordBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
-
     togglePasswordBtn.addEventListener('click', () => {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
@@ -509,18 +767,14 @@
         togglePasswordBtn.style.color = type === 'text' ? 'var(--primary-color)' : '#888';
     });
 
-    const handleEnterPress = (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('login-btn').click(); 
-        }
-    };
+    const handleEnterPress = (e) => { if (e.key === 'Enter') document.getElementById('login-btn').click(); };
     document.getElementById('email').addEventListener('keydown', handleEnterPress);
     document.getElementById('password').addEventListener('keydown', handleEnterPress);
 
     document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
     onAuthStateChanged(auth, (user) => { currentUser = user; updateUI(user); });
 
-    // --- JEU : DAILY SPIN (24h) ---
+    // --- JEUX ---
     document.getElementById('spinDailyBtn').addEventListener('click', async () => {
         const btn = document.getElementById('spinDailyBtn');
         btn.disabled = true;
@@ -528,30 +782,29 @@
         await updateDoc(doc(db, "users", currentUser.uid), { lastDaily: lastDailySpin });
 
         document.getElementById('pointerDaily').classList.add('pointer-spinning');
-
         let deg = 3600 + Math.floor(Math.random() * 360);
         document.getElementById('wheelDaily').style.transform = `rotate(${deg}deg)`;
         
         setTimeout(async () => {
             document.getElementById('pointerDaily').classList.remove('pointer-spinning');
-
             let win = Math.floor(Math.random() * 200) + 10;
             document.getElementById('daily-res').innerText = `GAGNÉ : ${win} JETONS !`;
             document.getElementById('daily-res').style.color = "var(--primary-color)";
             await syncTokens(tokens + win);
+            saveStats(win);
         }, 4000);
     });
 
-    // --- JEU : CADEAUX ---
     document.getElementById('spinPremiumBtn').addEventListener('click', async () => {
         if(tokens < 1000) return document.getElementById('premium-res').innerText = "Pas assez de points (1000 requis).";
         const btn = document.getElementById('spinPremiumBtn');
         btn.disabled = true;
         document.getElementById('premium-res').innerText = "";
+        
         await syncTokens(tokens - 1000);
+        addRakeback(1000); // Rakeback sur la roue aussi !
         
         document.getElementById('pointerPremium').classList.add('pointer-spinning');
-
         let rand = Math.random() * 100, win, deg;
         
         if(rand < 0.0001) { win = "Bonus Fruit Party (20$)"; deg = 360*5 + 30; }
@@ -565,7 +818,7 @@
             if(win !== "PERDU") {
                 document.getElementById('premium-res').innerText = `FÉLICITATIONS ! Tu as gagné : ${win}. On te contacte !`;
                 document.getElementById('premium-res').style.color = "var(--primary-color)";
-                await setDoc(doc(db, "gagnants", Date.now().toString()), { email: currentUser.email, lot: win, date: new Date().toLocaleString() });
+                await setDoc(doc(db, "gagnants", Date.now().toString()), { email: currentUser.email, pseudo: document.getElementById('pseudo-text').innerText, lot: win, date: new Date().toLocaleString() });
             } else {
                 document.getElementById('premium-res').innerText = "Dommage... Retente ta chance !";
                 document.getElementById('premium-res').style.color = "white";
@@ -573,6 +826,17 @@
             btn.disabled = false;
         }, 4000);
     });
+
+    // --- SMART BET ---
+    const bjBetInput = document.getElementById('bj-bet');
+    document.getElementById('bj-btn-half').addEventListener('click', () => { bjBetInput.value = Math.max(1, Math.floor(bjBetInput.value / 2)); });
+    document.getElementById('bj-btn-double').addEventListener('click', () => { bjBetInput.value = bjBetInput.value * 2; });
+    document.getElementById('bj-btn-max').addEventListener('click', () => { bjBetInput.value = Math.floor(tokens); });
+
+    const minesBetInput = document.getElementById('mines-bet');
+    document.getElementById('mines-btn-half').addEventListener('click', () => { minesBetInput.value = Math.max(1, Math.floor(minesBetInput.value / 2)); });
+    document.getElementById('mines-btn-double').addEventListener('click', () => { minesBetInput.value = minesBetInput.value * 2; });
+    document.getElementById('mines-btn-max').addEventListener('click', () => { minesBetInput.value = Math.floor(tokens); });
 
     // --- JEU : BLACKJACK ---
     let deck = [], pHand = [], dHand = [], bjBet = 0;
@@ -583,6 +847,8 @@
         if(bjBet > tokens) return alert("Pas assez de points !");
         
         await syncTokens(tokens - bjBet);
+        addRakeback(bjBet); // AJOUT RAKEBACK ICI
+        
         document.getElementById('bj-setup').style.display = 'none';
         document.getElementById('bj-game').style.display = 'block';
         startBJ();
@@ -617,13 +883,17 @@
         document.getElementById('bj-double').style.display = 'none'; 
         pHand.push(deck.pop());
         renderBJ(true);
-        if(getBJScore(pHand) > 21) endBJ("PERDU (BUST)", "var(--wheel-red)");
+        if(getBJScore(pHand) > 21) {
+            saveStats(0);
+            endBJ("PERDU (BUST)", "var(--wheel-red)");
+        }
     });
 
     document.getElementById('bj-double').addEventListener('click', async () => {
         if(tokens < bjBet) return alert("Pas assez de points pour doubler !");
         
         await syncTokens(tokens - bjBet); 
+        addRakeback(bjBet); // AJOUT RAKEBACK SUR LE DOUBLE
         bjBet = bjBet * 2; 
         document.getElementById('bj-double').style.display = 'none';
         
@@ -631,6 +901,7 @@
         renderBJ(true);
         
         if(getBJScore(pHand) > 21) {
+            saveStats(0);
             endBJ("PERDU (BUST)", "var(--wheel-red)");
         } else {
             setTimeout(() => document.getElementById('bj-stay').click(), 500); 
@@ -649,17 +920,23 @@
         if (pBJ && !dBJ) {
             let winAmount = Math.floor(bjBet * 2.5);
             await syncTokens(tokens + winAmount);
+            saveStats(winAmount);
             endBJ(`BLACKJACK ! +${winAmount}`, "var(--primary-color)");
         } else if (pBJ && dBJ) {
             await syncTokens(tokens + bjBet);
+            saveStats(0);
             endBJ("ÉGALITÉ (2 BLACKJACKS)", "white");
         } else if (ds > 21 || ps > ds) {
-            await syncTokens(tokens + (bjBet * 2));
-            endBJ(`GAGNÉ ! +${bjBet * 2}`, "var(--primary-color)");
+            let winAmount = bjBet * 2;
+            await syncTokens(tokens + winAmount);
+            saveStats(winAmount);
+            endBJ(`GAGNÉ ! +${winAmount}`, "var(--primary-color)");
         } else if (ps === ds) {
             await syncTokens(tokens + bjBet);
+            saveStats(0);
             endBJ("ÉGALITÉ", "white");
         } else {
+            saveStats(0);
             endBJ(`PERDU -${bjBet}`, "var(--wheel-red)");
         }
     });
@@ -702,6 +979,8 @@
         if (mBet > tokens) return alert("Pas assez de points !");
         
         await syncTokens(tokens - mBet);
+        addRakeback(mBet); // AJOUT RAKEBACK ICI
+        
         document.getElementById('mines-setup').style.display = 'none';
         document.getElementById('mines-game').style.display = 'block';
         document.getElementById('mines-res').innerText = "";
@@ -713,9 +992,7 @@
     function getMinesMultiplier(mines, hits) {
         if (hits === 0) return 1.00;
         let prob = 1.0;
-        for (let i = 0; i < hits; i++) {
-            prob *= (25 - mines - i) / (25 - i);
-        }
+        for (let i = 0; i < hits; i++) { prob *= (25 - mines - i) / (25 - i); }
         return (0.99 / prob); 
     }
 
@@ -733,10 +1010,7 @@
         let placed = 0;
         while(placed < mCount) {
             let r = Math.floor(Math.random() * 25);
-            if(!mBoard[r]) {
-                mBoard[r] = true;
-                placed++;
-            }
+            if(!mBoard[r]) { mBoard[r] = true; placed++; }
         }
 
         const grid = document.getElementById('mines-grid');
@@ -760,6 +1034,7 @@
             cellElement.classList.add('bomb');
             cellElement.innerHTML = '💣';
             revealAllMines();
+            saveStats(0);
             endMines(`BOUM ! Tu as tout perdu`, "var(--wheel-red)");
         } else {
             cellElement.classList.add('safe');
@@ -779,11 +1054,7 @@
             if(!cells[i].classList.contains('revealed')) {
                 cells[i].classList.add('revealed');
                 cells[i].classList.add('dimmed'); 
-                if(mBoard[i]) {
-                    cells[i].innerHTML = '💣';
-                } else {
-                    cells[i].innerHTML = '💎';
-                }
+                if(mBoard[i]) { cells[i].innerHTML = '💣'; } else { cells[i].innerHTML = '💎'; }
             }
         }
     }
@@ -795,6 +1066,7 @@
         let win = Math.floor(mBet * mult);
         
         await syncTokens(tokens + win);
+        saveStats(win);
         revealAllMines();
         endMines(`ENCAISSÉ ! +${win}`, "var(--primary-color)");
     });
