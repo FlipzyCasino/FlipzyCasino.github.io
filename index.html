@@ -16,6 +16,7 @@
             --wheel-red: #ff0055;
             --dlive-yellow: #ffd200;
             --mines-cyan: #00d2ff;
+            --trickz-color: #a855f7; /* Couleur Trickz ajoutée */
         }
 
         body {
@@ -105,6 +106,7 @@
         .btn-partner:hover { background: rgba(255,255,255,0.1); }
 
         @keyframes pulse-glow { 0% { box-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } 50% { box-shadow: 0 0 30px rgba(0, 255, 163, 0.8); } 100% { box-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } }
+        @keyframes pulse-glow-trickz { 0% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); } 50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.8); } 100% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); } }
 
         /* ==================== SYSTÈME VIP ==================== */
         #display-pseudo { transition: 0.2s; cursor: pointer; }
@@ -182,6 +184,17 @@
         .info-tooltip-wrapper:hover .tooltip-box { opacity: 1; visibility: visible; transform: translateY(0); }
         .tooltip-box ul { list-style: none; padding: 0; margin: 8px 0 0 0; font-size: 0.85rem; line-height: 1.8; }
 
+        /* TOOLTIP INLINE SPECIFIQUE (POUR TRICKZ) */
+        .inline-i { position: relative; cursor: pointer; color: var(--trickz-color); margin-left: 5px; display: inline-block; }
+        .inline-i .tooltip-box-inline {
+            position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%) translateY(10px);
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(10px);
+            border: 1px solid var(--trickz-color); border-radius: 8px; padding: 10px; width: max-content;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            font-size: 0.85rem; pointer-events: none; color: white; z-index: 100;
+        }
+        .inline-i:hover .tooltip-box-inline { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
         @media (max-width: 768px) {
             .main-wrapper { grid-template-columns: 1fr; }
             .header-box { flex-direction: column; gap: 15px; text-align: center; }
@@ -234,10 +247,29 @@
         </div>
     </div>
 
-    <div class="glass-panel" style="grid-column: span 2; text-align: center; border: 2px solid var(--primary-color); background: linear-gradient(145deg, rgba(0,255,163,0.1) 0%, rgba(0,0,0,0.8) 100%); animation: pulse-glow 3s infinite;">
-        <h2 style="font-family: Montserrat; color: var(--primary-color); margin-top: 0; font-size: 2rem; font-weight:900; text-transform: uppercase; letter-spacing: 1px;">Partenaire Exclusif Shuffle</h2>
-        <p style="font-size: 1.1rem; margin-bottom: 25px; opacity:0.8;">Utilise le code <strong style="color:var(--primary-color)">FLIPZY</strong> pour débloquer les meilleurs bonus !</p>
-        <a href="https://shuffle.com?r=Flipzy" target="_blank" class="btn-action" style="font-size: 1.3rem; padding: 20px 50px; display: inline-block; width: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🚀 JOUER SUR SHUFFLE</a>
+    <div class="glass-panel" style="text-align: center; border: 2px solid var(--primary-color) !important; background: linear-gradient(145deg, rgba(0,255,163,0.1) 0%, rgba(0,0,0,0.8) 100%); animation: pulse-glow 3s infinite; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h2 style="font-family: Montserrat; color: var(--primary-color); margin-top: 0; font-size: 1.5rem; font-weight:900; text-transform: uppercase; letter-spacing: 1px;">Partenaire Shuffle</h2>
+            <p style="font-size: 1rem; margin-bottom: 25px; opacity:0.8;">Utilise le code <strong style="color:var(--primary-color)">FLIPZY</strong> pour débloquer les meilleurs bonus !</p>
+        </div>
+        <a href="https://shuffle.com?r=Flipzy" target="_blank" class="btn-action" style="font-size: 1.1rem; padding: 18px 20px; width: 100%; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🚀 JOUER SUR SHUFFLE</a>
+    </div>
+
+    <div class="glass-panel" style="text-align: center; border: 2px solid var(--trickz-color) !important; background: linear-gradient(145deg, rgba(168,85,247,0.1) 0%, rgba(0,0,0,0.8) 100%); animation: pulse-glow-trickz 3s infinite; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h2 style="font-family: Montserrat; color: var(--trickz-color); margin-top: 0; font-size: 1.5rem; font-weight:900; text-transform: uppercase; letter-spacing: 1px;">Partenaire Trickz</h2>
+            <p style="font-size: 0.95rem; margin-bottom: 5px; opacity:0.8;">
+                <strong style="color:var(--trickz-color)">25€ déposé = 25€ remboursé</strong>
+                <span class="inline-i">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip-box-inline">
+                        <strong style="color: var(--trickz-color);">Sans condition !</strong>
+                    </span>
+                </span>
+            </p>
+            <p style="font-size: 0.8rem; margin-top: 0; margin-bottom: 20px; opacity: 0.6; font-weight: bold;">+ Bonus 100% jusqu'à 500€ + 100 FS</p>
+        </div>
+        <a href="https://go.spinwise.partners/visit/?bta=983535&brand=trickz" target="_blank" class="btn-action" style="background: var(--trickz-color); color: white; font-size: 1.1rem; padding: 18px 20px; width: 100%; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🎁 PROFITER DE L'OFFRE</a>
     </div>
 
     <div class="glass-panel" style="text-align:center;">
