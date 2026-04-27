@@ -14,9 +14,11 @@
             --card-bg: rgba(15, 15, 15, 0.7);
             --glass-border: rgba(255, 255, 255, 0.05);
             --wheel-red: #ff0055;
-            --dlive-yellow: #ffd200;
+            --accent-yellow: #ffd200; /* Ancien jaune DLive gardé pour les pièces/cadeaux */
             --mines-cyan: #00d2ff;
-            --trickz-color: #a855f7; /* Couleur Trickz ajoutée */
+            --trickz-color: #a855f7;
+            --rumble-green: #85c742; /* Vert officiel Rumble */
+            --live-red: #ff3b3b; /* Rouge vif pour le statut Live */
         }
 
         body {
@@ -54,7 +56,7 @@
         .glass-panel:hover { 
             background: 
                 linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
-                linear-gradient(90deg, var(--primary-color), var(--mines-cyan), var(--dlive-yellow), var(--wheel-red), var(--primary-color)) border-box !important;
+                linear-gradient(90deg, var(--primary-color), var(--mines-cyan), var(--accent-yellow), var(--wheel-red), var(--primary-color)) border-box !important;
             background-size: 100% 100%, 300% 100% !important;
             animation: borderGradientAnim 2.5s linear infinite !important;
             box-shadow: 0 15px 35px rgba(0, 255, 163, 0.15) !important;
@@ -80,7 +82,9 @@
 
         .header-box { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 20px;}
         .profile-pic { width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--primary-color); box-shadow: 0 0 20px var(--primary-glow);}
-        .badge-live { background: rgba(255, 210, 0, 0.1); color: var(--dlive-yellow); border: 1px solid var(--dlive-yellow); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; display: inline-block; margin-bottom: 8px; }
+        
+        /* Nouveau badge Live rouge */
+        .badge-live { background: rgba(255, 59, 59, 0.1); color: var(--live-red); border: 1px solid var(--live-red); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; display: inline-block; margin-bottom: 8px; }
         
         .tokens-display { 
             background: rgba(0,0,0,0.6); padding: 12px 25px; border-radius: 50px; 
@@ -217,7 +221,7 @@
                 <h1 style="margin:0; font-family: Montserrat; font-weight:900; font-size: 2.2rem; background: linear-gradient(to right, #fff, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FLIPZY</h1>
                 
                 <div class="social-links-row">
-                    <a href="https://dlive.tv/Flipzycasino?ref=flipzycasino" target="_blank" class="btn-action" style="background: var(--dlive-yellow); padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
+                    <a href="https://rumble.com/user/Flipzycasino" target="_blank" class="btn-action" style="background: var(--rumble-green); color: white; padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
                         <i class="fas fa-play"></i> REJOINDRE LE LIVE
                     </a>
                     <a href="https://discord.gg/bcfqZkPNe" target="_blank" class="btn-action" style="background: #5865F2; color: white; padding: 10px 15px; font-size: 0.85rem; display: inline-flex; align-items:center; gap:6px; width: auto;">
@@ -273,9 +277,9 @@
     </div>
 
     <div class="glass-panel" style="text-align:center;">
-        <h3 style="color: var(--dlive-yellow); margin:0; font-family: Montserrat;">DAILY REWARD</h3>
+        <h3 style="color: var(--accent-yellow); margin:0; font-family: Montserrat;">DAILY REWARD</h3>
         <p style="font-size:0.8rem; opacity:0.6;">Points gratuits toutes les 24h</p>
-        <button id="openDaily" class="btn-partner" style="border-color: var(--dlive-yellow); color: var(--dlive-yellow); width: 100%; box-sizing: border-box;"><i class="fas fa-gift"></i> Lancer le Spin</button>
+        <button id="openDaily" class="btn-partner" style="border-color: var(--accent-yellow); color: var(--accent-yellow); width: 100%; box-sizing: border-box;"><i class="fas fa-gift"></i> Lancer le Spin</button>
     </div>
 
     <div class="glass-panel" style="text-align:center; border-color: rgba(255, 0, 85, 0.3);">
@@ -338,10 +342,10 @@
 <div id="modalDaily" class="modal-overlay">
     <div class="modal-box">
         <span class="close-modal">&times;</span>
-        <h2 style="color: var(--dlive-yellow); font-family: Montserrat;">DAILY SPIN</h2>
+        <h2 style="color: var(--accent-yellow); font-family: Montserrat;">DAILY SPIN</h2>
         <div class="wheel-wrapper">
             <div id="pointerDaily" class="wheel-pointer"></div>
-            <div id="wheelDaily" class="wheel-circle" style="background: conic-gradient(#ffd200 0 90deg, #222 90deg 180deg, #ffd200 180deg 270deg, #222 270deg 360deg);"></div>
+            <div id="wheelDaily" class="wheel-circle" style="background: conic-gradient(var(--accent-yellow) 0 90deg, #222 90deg 180deg, var(--accent-yellow) 180deg 270deg, #222 270deg 360deg);"></div>
         </div>
         <button id="spinDailyBtn" class="btn-action">SPIN GRATUIT</button>
         <p id="daily-res" style="margin-top:15px; font-weight:bold;"></p>
@@ -392,11 +396,11 @@
 
             <div id="bj-controls" style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="bj-hit" class="btn-action">CARTE</button>
-                <button id="bj-double" class="btn-action" style="background: var(--dlive-yellow); color: #000;">DOUBLER</button>
+                <button id="bj-double" class="btn-action" style="background: var(--accent-yellow); color: #000;">DOUBLER</button>
                 <button id="bj-stay" class="btn-action" style="background:#333; color:white;">RESTER</button>
             </div>
             <p id="bj-res" style="margin-top: 15px; font-weight: bold; font-size: 1.2rem; text-align: center;"></p>
-            <button id="bj-close" class="btn-action" style="display:none; margin-top:10px; background: var(--dlive-yellow);">REJOUER</button>
+            <button id="bj-close" class="btn-action" style="display:none; margin-top:10px; background: var(--accent-yellow);">REJOUER</button>
         </div>
     </div>
 </div>
@@ -474,13 +478,13 @@
                 </div>
             </div>
 
-            <div style="grid-column: span 2; background: rgba(255, 210, 0, 0.05); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--dlive-yellow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="grid-column: span 2; background: rgba(255, 210, 0, 0.05); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--accent-yellow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div style="text-align: left;">
-                    <p style="margin: 0; font-size: 0.8rem; color: #aaa;"><i class="fas fa-piggy-bank" style="color: var(--dlive-yellow);"></i> Coffre-Fort (Rakeback 1%)</p>
-                    <h3 id="stat-rakeback" style="margin: 5px 0 0 0; font-size: 1.8rem; color: var(--dlive-yellow); font-weight: 900;">0.00 <i class="fas fa-coins" style="font-size: 1rem;"></i></h3>
+                    <p style="margin: 0; font-size: 0.8rem; color: #aaa;"><i class="fas fa-piggy-bank" style="color: var(--accent-yellow);"></i> Coffre-Fort (Rakeback 1%)</p>
+                    <h3 id="stat-rakeback" style="margin: 5px 0 0 0; font-size: 1.8rem; color: var(--accent-yellow); font-weight: 900;">0.00 <i class="fas fa-coins" style="font-size: 1rem;"></i></h3>
                 </div>
                 <div>
-                    <button id="claim-rakeback-btn" class="btn-action" style="background: var(--dlive-yellow); color: #000; padding: 10px 20px; font-size: 0.9rem; width: auto; box-shadow: 0 0 15px rgba(255, 210, 0, 0.4);">ENCAISSER</button>
+                    <button id="claim-rakeback-btn" class="btn-action" style="background: var(--accent-yellow); color: #000; padding: 10px 20px; font-size: 0.9rem; width: auto; box-shadow: 0 0 15px rgba(255, 210, 0, 0.4);">ENCAISSER</button>
                 </div>
             </div>
 
@@ -497,7 +501,7 @@
             </div>
             
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border);">
-                <i class="fas fa-trophy" style="font-size: 1.2rem; color: var(--dlive-yellow); margin-bottom: 5px;"></i>
+                <i class="fas fa-trophy" style="font-size: 1.2rem; color: var(--accent-yellow); margin-bottom: 5px;"></i>
                 <p style="margin: 0; font-size: 0.8rem; color: #aaa;">Max Win</p>
                 <h3 id="stat-maxwin" style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">0 <i class="fas fa-coins" style="font-size: 0.9rem;"></i></h3>
             </div>
@@ -665,7 +669,7 @@
             btn.style.background = "var(--primary-color)";
             setTimeout(() => {
                 btn.innerText = originalText;
-                btn.style.background = "var(--dlive-yellow)";
+                btn.style.background = "var(--accent-yellow)";
             }, 2000);
         }
     });
